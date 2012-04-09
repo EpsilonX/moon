@@ -1,130 +1,77 @@
 package com.shunote;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
-
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
-
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-
-
-import com.shunote.HTTP.WebClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.shunote.Entity.Note;
+import com.shunote.HTTP.WebClient;
 
 public class ShunoteActivity extends Activity {
 	/** Called when the activity is first created. */
-	String PREFS_NAME = "data"; //SharedPrefences的PREF_NAME
+	String PREFS_NAME = "data"; // SharedPrefences的PREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID,USERNAME,PWD; //SP中各个字段
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD; // SP中各个字段
 	String TAG = "JEFFREY_TAG";
-	Button button;
-	EditText username, pwd;
+
+	ArrayList<Note> noteList = new ArrayList<Note>();
 	TextView tv;
+	ListView listview;
+	MyAdapter myAdapter;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.login);
-		sp = getSharedPreferences(PREFS_NAME, 0);
+		setContentView(R.layout.notelist);
 
-		button = (Button) findViewById(R.id.login);
+		sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
 		tv = (TextView) findViewById(R.id.out);
-		username = (EditText) findViewById(R.id.username);
-		pwd =  (EditText) findViewById(R.id.password);
+		listview = (ListView) findViewById(R.id.notelist_list);
 
-		//调入SP中用户信息
+		myAdapter = new MyAdapter();
+
+		// 调入SP中用户信息
 		USERID = sp.getString("userid", null);
 		JSESSIONID = sp.getString("JSESSIONID", null);
 		SESSIONID = sp.getString("sessionid", null);
-		
-		//如果SP中不存在用户信息则需登录
-		if (USERID == null) {
-			button.setOnClickListener(new View.OnClickListener() {
 
-				@SuppressWarnings("unchecked")
-				@Override
-				public void onClick(View v) {
-				
-					LoginTask login = new LoginTask();
-					List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-					sp.edit().putString("USERNAME", username.getText().toString());
-					sp.edit().putString("PWD", pwd.getText().toString());
-					sp.edit().commit();
-					pairs.add(new BasicNameValuePair("j_username",
-							username.getText().toString()));
-					pairs.add(new BasicNameValuePair("j_password", pwd.getText().toString()));
-					login.execute(pairs);	
-			}
-		});
+		// 如果SP中不存在用户信息则需登录
+		if (USERID == null) {
+			Intent mIntent = new Intent(this, LoginActivity.class);
+			startActivity(mIntent);
+			finish();
 		} else {
-			button.setClickable(false);
 			Log.v(TAG, "USERID=" + USERID);
 			Log.v(TAG, "JSESSIONID=" + JSESSIONID);
 			Log.v(TAG, "SESSIONID=" + SESSIONID);
-			
-			tv.append("用户已登录!\n");
+
 			GetDataTask getData = new GetDataTask();
-			String url = "/users/"+USERID;
+			String url = "/users/" + USERID + "/usernodes";
 			getData.execute(url);
 		}
 
 	}
 
 	/**
-	 * 用户登录异步进程
-	 * @author Jeffrey
-	 *
-	 */
-	class LoginTask extends
-			android.os.AsyncTask<List<NameValuePair>, Integer, String> {
-
-		@Override
-		protected String doInBackground(List<NameValuePair>... params) {
-			
-			String result = "";		
-			
-			//调用HTTP包中webclient类的登录方法，返回cookie
-			CookieStore localCookieStore = WebClient.getInstance().Login(params[0]);
-			
-			//将cookie存入SP
-			Editor spEditor = sp.edit();
-			List<Cookie> cookies = localCookieStore.getCookies();
-			for (Cookie c : cookies) {
-				spEditor.putString(c.getName(), c.getValue());
-			}
-			spEditor.commit();			
-
-			USERID = sp.getString("userid", null);
-			JSESSIONID = sp.getString("JSESSIONID", null);
-			SESSIONID = sp.getString("sessionid", null);
-
-			result =  localCookieStore!=null?"登录成功!\n用户ID为:"+USERID:"登录失败!";
-			
-			return result;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			tv.append(result);
-		}
-
-	}
-
-	/**
 	 * 获取数据异步进程
+	 * 
 	 * @author Jeffrey
 	 * 
 	 */
@@ -137,44 +84,73 @@ public class ShunoteActivity extends Activity {
 
 			// 填入Cookie信息
 			CookieStore cookieStore = new BasicCookieStore();
-			BasicClientCookie cookie1 = new BasicClientCookie("JSESSIONID",JSESSIONID);
+			BasicClientCookie cookie1 = new BasicClientCookie("JSESSIONID",
+					JSESSIONID);
 			cookie1.setPath("/");
 			cookie1.setDomain("shunote.com");
 			cookie1.setVersion(0);
-			BasicClientCookie cookie2 = new BasicClientCookie("sessionid",SESSIONID);
+			BasicClientCookie cookie2 = new BasicClientCookie("sessionid",
+					SESSIONID);
 			cookie1.setPath("/");
 			cookie1.setDomain("shunote.com");
 			cookie1.setVersion(0);
 			cookieStore.addCookie(cookie1);
 			cookieStore.addCookie(cookie2);
 
-			//调用HTTP包中webclient的getdata方法获取数据
+			// 调用HTTP包中webclient的getdata方法获取数据
 			result = WebClient.getInstance().GetData(params[0], cookieStore);
-			
+
 			return result;
-			
+
 		}
 
 		protected void onPostExecute(String result) {
-//			try {
-//				JSONObject object = new JSONObject(result);
-//				JSONObject jnode = object.getJSONObject("nodes");
-//				tv.setText(jnode.toString());
-//				Node root = Transform.getInstance().json2Node(jnode);
-//				JSONObject jroot = Transform.getInstance().node2Json(root);
-//				tv.setText(jroot.toString());
-//
-//				Node root2 = Transform.getInstance().json2Node(jroot);
-//				JSONObject jroot2 = Transform.getInstance().node2Json(root2);
-//				tv.setText(jroot2.toString());
-//			} catch (JSONException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-			
-			tv.append(result);
+			try {
+				JSONArray objects = new JSONArray(result);
+
+				for (int i = 0; i < objects.length(); i++) {
+					int id = objects.getJSONObject(i).getInt("id");
+					String name = objects.getJSONObject(i).getString("title");
+					int root = objects.getJSONObject(i).getInt("root");
+					Note note = new Note(id, name, root, null);
+					noteList.add(note);
+				}
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			listview.setAdapter(myAdapter);
+		}
+
+	}
+
+	public class MyAdapter extends ArrayAdapter<Note> {
+
+		MyAdapter() {
+			super(ShunoteActivity.this, R.layout.noteitem, noteList);
+
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View row = convertView;
+
+			if (row == null) {
+				LayoutInflater inflater = getLayoutInflater();
+				row = inflater.inflate(R.layout.noteitem, parent, false);
+
+			}
+			TextView label = (TextView) row.findViewById(R.id.noteitem);
+
+			// View liner = (View) row.findViewById(R.id.nodelist_relat1);
+			// Button b1 = (Button) liner.findViewById(R.id.nodelist_b1);
+			// b1.setVisibility(View.GONE);
+			label.setText(noteList.get(position).getName());
+			return row;
 
 		}
 
 	}
+
 }

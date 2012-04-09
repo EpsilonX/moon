@@ -1,5 +1,6 @@
 package com.shunote.Entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,9 @@ import java.util.List;
  * @author Jeffrey
  * @since 2012-3-31
  */
-public class Node {
+public class Node implements Serializable {
+	
+	private static final long serialVersionUID = 5331841769033381757L;
 	private int id;
 	private String title;
 	private String content;
