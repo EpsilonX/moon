@@ -15,11 +15,11 @@ public class Node implements Serializable {
 	private int id;
 	private String title;
 	private String content;
-	private String img;
+	private Image img;
 	private Node father;
 	private List<Node> sons;
 	
-	public Node(int id, String title, String content, String img, Node father) {
+	public Node(int id, String title, String content, Image img, Node father) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -38,7 +38,7 @@ public class Node implements Serializable {
 	public String getContent() {
 		return content;
 	}
-	public String getImg() {
+	public Image getImg() {
 		return img;
 	}
 	public Node getFather() {

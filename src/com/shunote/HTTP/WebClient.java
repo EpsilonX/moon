@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
@@ -130,4 +131,27 @@ public class WebClient {
 
 		return result;
 	}
+	
+	public String PostData(String url,CookieStore cookieStore,List<NameValuePair> nameValuePairs) throws ClientProtocolException, IOException{
+		
+		String resultstr = null;
+		httpclient.setCookieStore(cookieStore);
+		
+		//超时请求
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+
+        //读取超时
+        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+        
+		HttpPost httpPost = new HttpPost(url);
+		
+		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+         HttpResponse response = httpclient.execute(httpPost);
+         
+         resultstr =EntityUtils.toString(response.getEntity());
+         
+		return resultstr;
+	}
+		
 }

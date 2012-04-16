@@ -27,6 +27,7 @@ public class Note {
 	public String getName() {
 		return name;
 	}
+	
 	public int getRoot() {
 		return root;
 	}

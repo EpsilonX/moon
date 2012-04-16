@@ -1,15 +1,9 @@
 package com.shunote;
 
 import java.util.ArrayList;
-
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.shunote.Entity.Note;
+import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 
 public class ShunoteActivity extends Activity {
@@ -83,22 +77,10 @@ public class ShunoteActivity extends Activity {
 			String result = "用户信息：";
 
 			// 填入Cookie信息
-			CookieStore cookieStore = new BasicCookieStore();
-			BasicClientCookie cookie1 = new BasicClientCookie("JSESSIONID",
-					JSESSIONID);
-			cookie1.setPath("/");
-			cookie1.setDomain("shunote.com");
-			cookie1.setVersion(0);
-			BasicClientCookie cookie2 = new BasicClientCookie("sessionid",
-					SESSIONID);
-			cookie1.setPath("/");
-			cookie1.setDomain("shunote.com");
-			cookie1.setVersion(0);
-			cookieStore.addCookie(cookie1);
-			cookieStore.addCookie(cookie2);
+			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID);
 
 			// 调用HTTP包中webclient的getdata方法获取数据
-			result = WebClient.getInstance().GetData(params[0], cookieStore);
+			result = WebClient.getInstance().GetData(params[0], myc.getCookieStore());
 
 			return result;
 

@@ -1,11 +1,15 @@
 package com.shunote.Entity;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 public class Transform {
@@ -105,5 +109,31 @@ public class Transform {
 			}
 			sonsOfFather.put(json);
 		}
+	}
+	
+	/**
+	 * 将位图BMP转换为Base64字符串
+	 * @param bmp 位图
+	 * @return Base64字符串
+	 */
+	public String bmp2String(Bitmap bmp){
+		// 先把 bitmpa 轉成 byte
+		 ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		 bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
+		 byte bytes[] = stream.toByteArray();
+		 // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
+		 String base64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+		 return base64;
+	}
+	
+	/**
+	 * 将Base64字符串转换为位图BMP
+	 * @param base64  字符串
+	 * @return BMP位图
+	 */
+	public Bitmap String2Bmp(String base64){
+		 byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+		 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length); //用BitmapFactory生成bitmap
+		 return bmp;
 	}
 }
