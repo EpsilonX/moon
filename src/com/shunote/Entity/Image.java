@@ -2,6 +2,11 @@ package com.shunote.Entity;
 
 import android.graphics.Bitmap;
 
+/**
+ * Image
+ * @author Jeffrey
+ *
+ */
 public class Image {
 	
 	private String url;

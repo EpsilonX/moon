@@ -13,7 +13,6 @@ import android.util.Log;
 public class DBHelperTest extends ActivityInstrumentationTestCase2<DBActivity> {
 	
 	private DBActivity dba = null;
-	private Test suite;
 	public DBHelperTest() {
 		super("com.shunote",DBActivity.class);
 	}

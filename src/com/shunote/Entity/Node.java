@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 节点实体类
+ * Node
  * @author Jeffrey
  * @since 2012-3-31
  */

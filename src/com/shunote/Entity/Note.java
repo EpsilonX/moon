@@ -1,7 +1,7 @@
 package com.shunote.Entity;
 
 /**
- * 笔记实体类
+ * Note
  * @author Jeffrey
  * @since 2012-3-31
  *

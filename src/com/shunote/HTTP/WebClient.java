@@ -1,6 +1,7 @@
 package com.shunote.HTTP;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.http.HttpHost;
@@ -9,6 +10,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -17,13 +19,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-
 import android.util.Log;
 
 /**
- * WebClient类，与服务器端建立连接，发送和返回数据
+ * WebClient
  * @author Jeffrey
  *
  */
@@ -36,10 +38,12 @@ public class WebClient {
 	final String LOGIN_URL1 = "http://shunote.com/zhishidian/user";
 	final String LOGIN_URL2 = "http://shunote.com/zhishidian/j_security_check";
 	
+	private final String host = "http://shunote.com/zhishidian";
+	
 	private WebClient(){};
 	
 	/**
-	 * Singleton模式
+	 * Singleton
 	 * @return instance
 	 */
 	public static WebClient getInstance(){
@@ -53,8 +57,8 @@ public class WebClient {
 	}
 	
 	/**
-	 * 登录方法
-	 * @param pairs 用户名和密码
+	 * Login
+	 * @param pairs 
 	 * @return CookieStore
 	 */
 	public CookieStore Login(List<NameValuePair> pairs){
@@ -63,7 +67,7 @@ public class WebClient {
 		
 		try {
 
-			// 先登录/zhishidian/user/获取cookie
+			// /zhishidian/user/  
 
 			HttpGet httpGet = new HttpGet(LOGIN_URL1);
 			httpclient.execute(httpGet);
@@ -71,14 +75,14 @@ public class WebClient {
 
 			HttpContext context = new BasicHttpContext();
 
-			// 带着Cookie登录获取新的session
+			// session
 			HttpPost httpPost = new HttpPost(LOGIN_URL2);
 			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
 			httpclient.setCookieStore(cookieStore1);
 			HttpResponse response2 = httpclient.execute(httpPost, context);
 			Log.v("WEBCLIENT",response2.getStatusLine().toString());
 			
-			// 获取cookie中的各种信息
+			//cookie
 			HttpGet httpGet2 = new HttpGet(LOGIN_URL1);
 			httpclient.execute(httpGet2);
 			
@@ -91,7 +95,7 @@ public class WebClient {
 			String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq
 					.getURI().toString()
 					: (currentHost.toURI() + currentReq.getURI());
-		    Log.v("WEBCLIENT","当前地址为:"+currentUrl);
+		    Log.v("WEBCLIENT","return url:"+currentUrl);
 			
 
 		} catch (ClientProtocolException e) {
@@ -104,9 +108,9 @@ public class WebClient {
 	}
 	
 	/**
-	 * 获取数据方法
-	 * @param relatedurl 相对路径
-	 * @param cookieStore 本地存储的CookieStore
+	 * Get Data
+	 * @param relatedurl url
+	 * @param cookieStore local CookieStore
 	 * @return data
 	 */
 	public String GetData(String relatedurl,CookieStore cookieStore){
@@ -115,8 +119,8 @@ public class WebClient {
 		
 		httpclient.setCookieStore(cookieStore);
 
-		// 建立HTTPGET连接
-		String url = "http://shunote.com/zhishidian" + relatedurl;
+		// HTTPGET
+		String url = host + relatedurl;
 
 		HttpGet httpGet = new HttpGet(url);
 
@@ -132,25 +136,61 @@ public class WebClient {
 		return result;
 	}
 	
-	public String PostData(String url,CookieStore cookieStore,List<NameValuePair> nameValuePairs) throws ClientProtocolException, IOException{
+	public String PostData(String url,CookieStore cookieStore,List<NameValuePair> nameValuePairs){
 		
 		String resultstr = null;
 		httpclient.setCookieStore(cookieStore);
 		
-		//超时请求
+		url = host + url;
+		
+		Log.v("WEBCLIENT.PostData","url="+url);
+		
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
 
-        //读取超时
         httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
         
 		HttpPost httpPost = new HttpPost(url);
 		
-		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		try {
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
+			
+			HttpResponse response = httpclient.execute(httpPost);
+	         
+	         resultstr =EntityUtils.toString(response.getEntity());
+	         
+	         Log.v("WEBCLIENT.POSTDATA","return"+resultstr);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-         HttpResponse response = httpclient.execute(httpPost);
+        
          
-         resultstr =EntityUtils.toString(response.getEntity());
-         
+		return resultstr;
+	}
+	
+	public String DelData(String url,CookieStore cookieStore) {
+		
+		String resultstr = null;
+		httpclient.setCookieStore(cookieStore);
+		
+		url = host + url;
+		
+		HttpDelete httpDel = new HttpDelete(url);
+		
+		HttpResponse response;
+		try {
+			response = httpclient.execute(httpDel);
+			resultstr = EntityUtils.toString(response.getEntity());
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		return resultstr;
 	}
 		

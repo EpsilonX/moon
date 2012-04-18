@@ -20,9 +20,9 @@ import com.shunote.HTTP.WebClient;
 
 public class ShunoteActivity extends Activity {
 	/** Called when the activity is first created. */
-	String PREFS_NAME = "data"; // SharedPrefences的PREF_NAME
+	String PREFS_NAME = "data"; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD; // SP中各个字段
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD; // SP's Tag
 	String TAG = "JEFFREY_TAG";
 
 	ArrayList<Note> noteList = new ArrayList<Note>();
@@ -41,12 +41,12 @@ public class ShunoteActivity extends Activity {
 
 		myAdapter = new MyAdapter();
 
-		// 调入SP中用户信息
+		// get info from sp
 		USERID = sp.getString("userid", null);
 		JSESSIONID = sp.getString("JSESSIONID", null);
 		SESSIONID = sp.getString("sessionid", null);
 
-		// 如果SP中不存在用户信息则需登录
+		// if user does not login, start LoginActivity
 		if (USERID == null) {
 			Intent mIntent = new Intent(this, LoginActivity.class);
 			startActivity(mIntent);
@@ -64,7 +64,7 @@ public class ShunoteActivity extends Activity {
 	}
 
 	/**
-	 * 获取数据异步进程
+	 * get Data
 	 * 
 	 * @author Jeffrey
 	 * 
@@ -74,12 +74,12 @@ public class ShunoteActivity extends Activity {
 		@Override
 		protected String doInBackground(String... params) {
 
-			String result = "用户信息：";
+			String result = "";
 
-			// 填入Cookie信息
+			// get Cookie
 			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID);
 
-			// 调用HTTP包中webclient的getdata方法获取数据
+			// use WebClient's get data method
 			result = WebClient.getInstance().GetData(params[0], myc.getCookieStore());
 
 			return result;

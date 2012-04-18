@@ -22,9 +22,9 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 
-	String PREFS_NAME = "data"; //SharedPrefences的PREF_NAME
+	String PREFS_NAME = "data"; //SharedPrefences's PREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID,USERNAME,PWD; //SP中各个字段
+	String USERID, JSESSIONID, SESSIONID,USERNAME,PWD; //SP_TAG
 	Button button;
 	EditText username, pwd;
 	Boolean success=false;
@@ -61,7 +61,7 @@ public class LoginActivity extends Activity {
 	}
 	
 	/**
-	 * 用户登录异步进程
+	 * Login AsyncTask
 	 * @author Jeffrey
 	 *
 	 */
@@ -73,10 +73,10 @@ public class LoginActivity extends Activity {
 			
 			String result = "";		
 			
-			//调用HTTP包中webclient类的登录方法，返回cookie
+			//acquire cookie from WebClient's login method
 			CookieStore localCookieStore = WebClient.getInstance().Login(params[0]);
 			
-			//将cookie存入SP
+			//put cookie into sp
 			Editor spEditor = sp.edit();
 			List<Cookie> cookies = localCookieStore.getCookies();
 			for (Cookie c : cookies) {
@@ -88,7 +88,7 @@ public class LoginActivity extends Activity {
 			JSESSIONID = sp.getString("JSESSIONID", null);
 			SESSIONID = sp.getString("sessionid", null);
 
-			result = USERID!=null?"登录成功!\n用户ID为:"+USERID:"登录失败!";
+			result = USERID!=null?"Login Success:"+USERID:"Login Failed";
 			
 			if (USERID!=null) success=true;
 			return result;

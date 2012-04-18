@@ -1,7 +1,7 @@
 package com.shunote.Entity;
 
 /**
- * 内存实体类
+ * Memory
  * @author Jeffrey
  * @since 2012-3-31
  */

@@ -19,7 +19,7 @@ public class Transform {
 	private Transform(){};
 	
 	/**
-	 * Singleton模式
+	 * Singleton
 	 * @return instance
 	 */
 	public static Transform getInstance(){
@@ -33,9 +33,9 @@ public class Transform {
 	
 	
 	/**
-	 * 将JSON转化为Node节点
+	 * JSON TO Node
 	 * @param json
-	 * @return root节点
+	 * @return root
 	 * @throws JSONException
 	 */
 	public Node json2Node(JSONObject json) throws JSONException{
@@ -48,7 +48,7 @@ public class Transform {
 	}
 	
 	/**
-	 * JSON递归遍历
+	 * JSON Traverse
 	 * @param sons
 	 * @param father
 	 * @throws JSONException
@@ -69,7 +69,7 @@ public class Transform {
 	}
 	
 	/**
-	 * Node转化为JSON
+	 * Node转 to JSON
 	 * @param root
 	 * @return JSONObject
 	 * @throws JSONException
@@ -87,7 +87,7 @@ public class Transform {
 	}
 	
 	/**
-	 * Node递归遍历
+	 * Node Traverse
 	 * @param sons
 	 * @param sonsOfFather
 	 * @throws JSONException
@@ -112,28 +112,26 @@ public class Transform {
 	}
 	
 	/**
-	 * 将位图BMP转换为Base64字符串
-	 * @param bmp 位图
-	 * @return Base64字符串
+	 * BMP to String
+	 * @param bmp
+	 * @return Base64
 	 */
 	public String bmp2String(Bitmap bmp){
-		// 先把 bitmpa 轉成 byte
 		 ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		 bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
 		 byte bytes[] = stream.toByteArray();
-		 // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
-		 String base64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+		 String base64 = Base64.encodeToString(bytes, Base64.DEFAULT); 
 		 return base64;
 	}
 	
 	/**
-	 * 将Base64字符串转换为位图BMP
-	 * @param base64  字符串
-	 * @return BMP位图
+	 * String to BMP
+	 * @param base64
+	 * @return BMP
 	 */
 	public Bitmap String2Bmp(String base64){
 		 byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
-		 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length); //用BitmapFactory生成bitmap
+		 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length); 
 		 return bmp;
 	}
 }
