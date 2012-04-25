@@ -8,6 +8,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.shunote.AppCache.Configuration;
 import com.shunote.HTTP.WebClient;
 
 import android.app.Activity;
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +24,7 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 
-	String PREFS_NAME = "data"; //SharedPrefences's PREF_NAME
+	String PREFS_NAME = ""; //SharedPrefences's PREF_NAME
 	SharedPreferences sp;
 	String USERID, JSESSIONID, SESSIONID,USERNAME,PWD; //SP_TAG
 	Button button;
@@ -37,6 +39,8 @@ public class LoginActivity extends Activity {
 		username = (EditText) findViewById(R.id.username);
 		pwd =  (EditText) findViewById(R.id.password);
 		
+		Configuration config = new Configuration(this);
+		PREFS_NAME = config.getValue("SPTAG");
 		sp = getSharedPreferences(PREFS_NAME, MODE_WORLD_READABLE);
 		
 		button.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +78,9 @@ public class LoginActivity extends Activity {
 			String result = "";		
 			
 			//acquire cookie from WebClient's login method
+			WebClient.getInstance().init(getApplicationContext());
+			
+			Log.d("Login",params[0].get(0).getValue());
 			CookieStore localCookieStore = WebClient.getInstance().Login(params[0]);
 			
 			//put cookie into sp

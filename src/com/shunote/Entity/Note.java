@@ -36,4 +36,12 @@ public class Note {
 		return json;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setJson(String json) {
+		this.json = json;
+	}
+
 }

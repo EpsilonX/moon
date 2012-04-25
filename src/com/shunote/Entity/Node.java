@@ -19,6 +19,10 @@ public class Node implements Serializable {
 	private Node father;
 	private List<Node> sons;
 	
+	public Node(){
+		super();
+	}
+	
 	public Node(int id, String title, String content, Image img, Node father) {
 		super();
 		this.id = id;
@@ -50,5 +54,26 @@ public class Node implements Serializable {
 	public void addSons(Node node){
 		sons.add(node);
 	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public void setImg(Image img) {
+		this.img = img;
+	}
+
+	public void setFather(Node father) {
+		this.father = father;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	
 }

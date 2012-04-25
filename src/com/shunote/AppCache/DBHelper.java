@@ -9,11 +9,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
 	public static final String dbname = "shunote.db";
 	public static final int version = 1;
+	private String tag = "DBHelper";
 
 	public DBHelper(Context context) {
 		super(context, dbname, null, version);
@@ -30,18 +32,36 @@ public class DBHelper extends SQLiteOpenHelper {
 						+"id INTEGER PRIMARY KEY AUTOINCREMENT,"
 						+"url TEXT,"
 						+"data TEXT)");
+		Log.d(tag,"DB Created");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS Note");
 		db.execSQL("DROP TABLE IF EXISTS Image");
-		onCreate(db);		
+		onCreate(db);	
+		Log.d(tag,"DB Upgraded");
 	}
 	
 	public void clear(SQLiteDatabase db){
 		db.execSQL("DROP TABLE IF EXISTS Note");
 		db.execSQL("DROP TABLE IF EXISTS Image");
+		Log.d(tag,"DB Cleared");
+	}
+	
+	public Note getNote(int id){
+		Note note = null;
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] columns = {"id","name","root","json"};
+		String[] params = {Integer.toString(id)};
+		Cursor result = db.query("Note", columns, "id=?", params, null, null, null);
+		if(result.moveToFirst()){
+			note = new Note(result.getInt(0), result.getString(1),result.getInt(2), result.getString(3));
+			Log.d(tag,"get Note title = " + note.getName());
+		}else{
+			Log.e(tag,"failed to get Note id=" + id);
+		}
+		return note;		
 	}
 	
 	public void insertNote(Note note){
@@ -51,17 +71,30 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put("name", note.getName());
 		cv.put("root", note.getRoot());
 		cv.put("json", note.getJson());
-		db.insert("Note", "name", cv);
+		if(db.insert("Note", "name", cv)!=-1){
+			Log.d(tag,"A new Note inserted! id= " + note.getId());
+		}else{
+			Log.d(tag,"failed! id= " + note.getId() + "exists!");
+		}
 		db.close();
+		
 	}
 
 	public void delNote(int id){
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete("Note", "id=?", new String[]{String.valueOf(id)});
+		if(db.delete("Note", "id=?", new String[]{String.valueOf(id)})!=0){
+			Log.d(tag,"A Note deleted! id = " + id);
+		}else{
+			Log.d(tag,"fail to delete Note id = " + id);
+		}
+		
+		db.close();
+		
 	}
 	
 	public ArrayList<Note> getNoteList(){
 		SQLiteDatabase db = this.getReadableDatabase();
+		int total=0;
 		Cursor result = db.rawQuery("SELECT * FROM Note", null);
 		result.moveToFirst();
 		ArrayList<Note> noteList = new ArrayList<Note>();
@@ -73,7 +106,9 @@ public class DBHelper extends SQLiteOpenHelper {
 			Note note = new Note(id,name,root,json);
 			noteList.add(note);
 			result.moveToNext();
+			total++;
 		}
+		Log.d(tag,total+" notes fetched!");
 		result.close();
 		return noteList;
 	}
@@ -85,8 +120,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put("name", note.getName());
 		cv.put("root", note.getRoot());
 		cv.put("json", note.getJson());
-		db.update("Note", cv,"id=?", new String[]{String.valueOf(note.getId())});
+		if(db.update("Note", cv,"id=?", new String[]{String.valueOf(note.getId())})!=0){
+			Log.d(tag,"update note! id = "+ note.getId());
+		}else{
+			Log.d(tag,"update failed! noteid = "+ note.getId());
+		}
 		db.close();
+		
 	}
 	
 	public void insertIMG(String url,String data){
@@ -96,6 +136,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put("data", data);
 		db.insert("Image", "url", cv);
 		db.close();
+		Log.d(tag,"insert IMG");
 	}
 	
 	public String getIMG(String url){

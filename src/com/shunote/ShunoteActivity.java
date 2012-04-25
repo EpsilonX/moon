@@ -3,6 +3,8 @@ package com.shunote;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,15 +16,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.shunote.AppCache.Configuration;
 import com.shunote.Entity.Note;
 import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 
 public class ShunoteActivity extends Activity {
 	/** Called when the activity is first created. */
-	String PREFS_NAME = "data"; // SharedPrefences'sPREF_NAME
+	String PREFS_NAME = ""; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD; // SP's Tag
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD,HOST; // SP's Tag
 	String TAG = "JEFFREY_TAG";
 
 	ArrayList<Note> noteList = new ArrayList<Note>();
@@ -34,6 +38,9 @@ public class ShunoteActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.notelist);
 
+		Configuration config = new Configuration(this);
+		PREFS_NAME = config.getValue("SPTAG");
+		HOST = config.getValue("host");
 		sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
 		tv = (TextView) findViewById(R.id.out);
@@ -77,18 +84,23 @@ public class ShunoteActivity extends Activity {
 			String result = "";
 
 			// get Cookie
-			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID);
+			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID,HOST);
 
+			WebClient.getInstance().init(getApplicationContext());
 			// use WebClient's get data method
 			result = WebClient.getInstance().GetData(params[0], myc.getCookieStore());
 
+			Log.i("ShunoteActivity.GetDataTask","result:"+result);
 			return result;
 
 		}
 
 		protected void onPostExecute(String result) {
 			try {
-				JSONArray objects = new JSONArray(result);
+				JSONObject obj = new JSONObject(result);
+				JSONArray objects = obj.getJSONArray("data");
+				
+				//JSONArray objects = new JSONArray(result);
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");
@@ -128,7 +140,8 @@ public class ShunoteActivity extends Activity {
 			// View liner = (View) row.findViewById(R.id.nodelist_relat1);
 			// Button b1 = (Button) liner.findViewById(R.id.nodelist_b1);
 			// b1.setVisibility(View.GONE);
-			label.setText(noteList.get(position).getName());
+			String out = noteList.get(position).getName()+" id:"+noteList.get(position).getId();
+			label.setText(out);
 			return row;
 
 		}

@@ -1,44 +1,55 @@
 package com.shunote;
 
-import org.apache.http.client.CookieStore;
-
 import com.shunote.AppCache.Cache;
+import com.shunote.Entity.Node;
 import com.shunote.Entity.Note;
-import com.shunote.HTTP.MyCookieStore;
-
+import com.shunote.Exception.CacheException;
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 public class OptActivity extends Activity {
 	
-	private CookieStore cookieStore = null;
-	private SharedPreferences sp = null;
-	String USERID,JSESSIONID, SESSIONID, USERNAME, PWD; // SP�и����ֶ�
 	int userid;
 	private Cache cache = null;
 	
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
-		sp = getSharedPreferences("data", MODE_WORLD_READABLE);
-		
-		// fetch data from SP
-		USERID = sp.getString("userid", null);
-		JSESSIONID = sp.getString("JSESSIONID", null);
-		SESSIONID = sp.getString("sessionid", null);
-		userid = Integer.parseInt(USERID);
-		MyCookieStore myc = new MyCookieStore(JSESSIONID,SESSIONID);
-		cookieStore = myc.getCookieStore();	
-		
 		cache = Cache.getInstance();
-		
-		cache.initDB(this);
+		try{
+			cache.init(this);
+		}catch(CacheException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void addNote(String title){
-		Log.v("addNote.userid", USERID);
-		cache.addNote(userid, title, cookieStore);
+		cache.addNote( title);
+	}
+	
+	public void delNote(int id){
+		Log.d("delNote","noteid= "+id);
+		cache.delNote( id);
+	}
+	
+	public Note getNote(int id){
+		Note note = null;
+		try{
+			Log.d("getNote","noteid= " + id);
+			note = cache.getNote( id);
+		}catch(CacheException e){
+			e.printStackTrace();
+		}
+		return note;
+	}
+	
+	public void updateNote(Note note){
+		Log.d("updateNote","noteid= " + note.getId());
+		cache.updateNote( note);
+	}
+	
+	public void addNode(Node node){
+		
 	}
 }

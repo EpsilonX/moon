@@ -22,6 +22,10 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+
+import com.shunote.AppCache.Configuration;
+
+import android.content.Context;
 import android.util.Log;
 
 /**
@@ -35,10 +39,13 @@ public class WebClient {
 	
 	DefaultHttpClient httpclient;
 	
-	final String LOGIN_URL1 = "http://shunote.com/zhishidian/user";
-	final String LOGIN_URL2 = "http://shunote.com/zhishidian/j_security_check";
+	private String host = "";
 	
-	private final String host = "http://shunote.com/zhishidian";
+	private String LOGIN_URL1 = "";
+	
+	private String LOGIN_URL2 = "";
+	
+	private String tag = "WebClient";
 	
 	private WebClient(){};
 	
@@ -50,10 +57,23 @@ public class WebClient {
 		if (instance == null) {
 			instance = new WebClient();
 			instance.httpclient = new DefaultHttpClient();
+			
 			return instance;
 		}else{
 			return instance;
 		}
+	}
+	
+	public void init(Context con){
+		Configuration config = new Configuration(con);
+		host = "http://"+config.getValue("host") + ":" + config.getValue("ports");
+		LOGIN_URL1 = host+"/zhishidian/user";
+		LOGIN_URL2 = host+"/j_security_check";
+		host = host + "/zhishidian";
+		Log.d(tag,"host="+host);
+		
+		httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+		httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
 	}
 	
 	/**
@@ -68,13 +88,18 @@ public class WebClient {
 		try {
 
 			// /zhishidian/user/  
-
+			Log.d(tag,pairs.get(0).getName()+ ": "+pairs.get(0).getValue());
+			Log.d(tag,"Login url="+LOGIN_URL1);
 			HttpGet httpGet = new HttpGet(LOGIN_URL1);
 			httpclient.execute(httpGet);
 			CookieStore cookieStore1 = httpclient.getCookieStore();
+			
+			Log.d(tag,"cookie host=" + cookieStore1.getCookies().get(0).getDomain());
+			Log.d(tag,"cookie hostports=" + cookieStore1.getCookies().get(0).getPorts());
 
 			HttpContext context = new BasicHttpContext();
 
+			Log.d(tag,"Login url2 = " + LOGIN_URL2);
 			// session
 			HttpPost httpPost = new HttpPost(LOGIN_URL2);
 			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
@@ -95,9 +120,10 @@ public class WebClient {
 			String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq
 					.getURI().toString()
 					: (currentHost.toURI() + currentReq.getURI());
-		    Log.v("WEBCLIENT","return url:"+currentUrl);
+		    Log.d("WEBCLIENT","return url:"+currentUrl);
+		    
+		    httpclient.getConnectionManager().closeExpiredConnections();
 			
-
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -121,10 +147,17 @@ public class WebClient {
 
 		// HTTPGET
 		String url = host + relatedurl;
+		
+		Log.d(tag,"url=" + url);
+		
+		Log.d(tag,"session="+cookieStore.getCookies().get(0).getValue());
+		
+		Log.d(tag,"sessionhost="+cookieStore.getCookies().get(0).getDomain());
 
 		HttpGet httpGet = new HttpGet(url);
 
 		try {
+			
 			HttpResponse httpResponse = httpclient.execute(httpGet);
 			result = EntityUtils.toString(httpResponse.getEntity());
 		} catch (ClientProtocolException e) {
@@ -144,10 +177,6 @@ public class WebClient {
 		url = host + url;
 		
 		Log.v("WEBCLIENT.PostData","url="+url);
-		
-        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
-
-        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
         
 		HttpPost httpPost = new HttpPost(url);
 		
@@ -158,7 +187,7 @@ public class WebClient {
 	         
 	         resultstr =EntityUtils.toString(response.getEntity());
 	         
-	         Log.v("WEBCLIENT.POSTDATA","return"+resultstr);
+	         Log.d("WEBCLIENT.POSTDATA","return"+resultstr);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
