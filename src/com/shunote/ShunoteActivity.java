@@ -14,6 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -70,6 +76,26 @@ public class ShunoteActivity extends Activity {
 			String url = "/users/" + USERID + "/usernodes";
 			getData.execute(url);
 		}
+
+		AnimationSet set = new AnimationSet(true);
+
+		Animation animation = new AlphaAnimation(0.0f, 1.0f);
+		animation.setDuration(10);
+		set.addAnimation(animation);
+
+		animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, -10.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+				-1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+		animation.setDuration(250);
+		animation.setInterpolator(new AccelerateDecelerateInterpolator());
+		set.addAnimation(animation);
+
+		LayoutAnimationController controller = new LayoutAnimationController(
+				set, 0.5f);
+
+		// controller.setInterpolator(new AccelerateDecelerateInterpolator());
+
+		listview.setLayoutAnimation(controller);
 
 		listview.setOnItemClickListener(new OnItemClickListener() {
 
