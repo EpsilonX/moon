@@ -2,6 +2,7 @@ package com.shunote;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +110,6 @@ public class ShunoteActivity extends Activity {
 				node.putExtra("ID", note.getId());
 				node.setClass(ShunoteActivity.this, NodeListActivity.class);
 				startActivity(node);
-
 			}
 		});
 
@@ -137,6 +137,7 @@ public class ShunoteActivity extends Activity {
 					myc.getCookieStore());
 
 			Log.i("ShunoteActivity.GetDataTask", "result:" + result);
+			
 			return result;
 
 		}
@@ -150,7 +151,7 @@ public class ShunoteActivity extends Activity {
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");
-					String name = objects.getJSONObject(i).getString("title");
+					String name = StringEscapeUtils.unescapeHtml(objects.getJSONObject(i).getString("title"));
 					int root = objects.getJSONObject(i).getInt("root");
 					Note note = new Note(id, name, root, null);
 					noteList.add(note);
