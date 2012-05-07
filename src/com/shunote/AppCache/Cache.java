@@ -2,6 +2,8 @@ package com.shunote.AppCache;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.message.BasicNameValuePair;
@@ -113,7 +115,7 @@ public class Cache{
 			}else{
 				JSONObject obj = objr.getJSONObject("data");
 				Log.d("Cache.getNote()","get Note from server!");
-				note = new Note(obj.getInt("id"),obj.getString("title"),obj.getInt("root") ,obj.getString("nodes"));
+				note = new Note(obj.getInt("id"),StringEscapeUtils.unescapeHtml(obj.getString("title")),obj.getInt("root") ,StringEscapeUtils.unescapeHtml(obj.getString("nodes")));
 				Note dbNote = dbHelper.getNote(noteid);
 				if (dbNote==null){
 					Log.d("Cache.getNote()","insert new note into DB");
