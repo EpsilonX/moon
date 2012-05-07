@@ -1,6 +1,7 @@
 package com.shunote;
 
 import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,7 +29,7 @@ public class ShunoteActivity extends Activity {
 	/** Called when the activity is first created. */
 	String PREFS_NAME = ""; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD,HOST; // SP's Tag
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST; // SP's Tag
 	String TAG = "JEFFREY_TAG";
 
 	ArrayList<Note> noteList = new ArrayList<Note>();
@@ -36,7 +39,7 @@ public class ShunoteActivity extends Activity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.notelist);
+		setContentView(R.layout.note_list);
 
 		Configuration config = new Configuration(this);
 		PREFS_NAME = config.getValue("SPTAG");
@@ -68,6 +71,22 @@ public class ShunoteActivity extends Activity {
 			getData.execute(url);
 		}
 
+		listview.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+
+				Note note = noteList.get(arg2);
+
+				Intent node = new Intent();
+				node.putExtra("ID", note.getId());
+				node.setClass(ShunoteActivity.this, NodeListActivity.class);
+				startActivity(node);
+
+			}
+		});
+
 	}
 
 	/**
@@ -84,13 +103,14 @@ public class ShunoteActivity extends Activity {
 			String result = "";
 
 			// get Cookie
-			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID,HOST);
+			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID, HOST);
 
 			WebClient.getInstance().init(getApplicationContext());
 			// use WebClient's get data method
-			result = WebClient.getInstance().GetData(params[0], myc.getCookieStore());
+			result = WebClient.getInstance().GetData(params[0],
+					myc.getCookieStore());
 
-			Log.i("ShunoteActivity.GetDataTask","result:"+result);
+			Log.i("ShunoteActivity.GetDataTask", "result:" + result);
 			return result;
 
 		}
@@ -99,8 +119,8 @@ public class ShunoteActivity extends Activity {
 			try {
 				JSONObject obj = new JSONObject(result);
 				JSONArray objects = obj.getJSONArray("data");
-				
-				//JSONArray objects = new JSONArray(result);
+
+				// JSONArray objects = new JSONArray(result);
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");
@@ -123,7 +143,7 @@ public class ShunoteActivity extends Activity {
 	public class MyAdapter extends ArrayAdapter<Note> {
 
 		MyAdapter() {
-			super(ShunoteActivity.this, R.layout.noteitem, noteList);
+			super(ShunoteActivity.this, R.layout.note_item, noteList);
 
 		}
 
@@ -132,7 +152,7 @@ public class ShunoteActivity extends Activity {
 
 			if (row == null) {
 				LayoutInflater inflater = getLayoutInflater();
-				row = inflater.inflate(R.layout.noteitem, parent, false);
+				row = inflater.inflate(R.layout.note_item, parent, false);
 
 			}
 			TextView label = (TextView) row.findViewById(R.id.noteitem);
@@ -140,7 +160,8 @@ public class ShunoteActivity extends Activity {
 			// View liner = (View) row.findViewById(R.id.nodelist_relat1);
 			// Button b1 = (Button) liner.findViewById(R.id.nodelist_b1);
 			// b1.setVisibility(View.GONE);
-			String out = noteList.get(position).getName()+" id:"+noteList.get(position).getId();
+			String out = noteList.get(position).getName() + " id:"
+					+ noteList.get(position).getId();
 			label.setText(out);
 			return row;
 

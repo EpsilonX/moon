@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/head_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Father Title"
+        android:textSize="20sp" />
+
+    <RelativeLayout
+        android:id="@+id/nodelist_relat1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:descendantFocusability="blocksDescendants"
+        android:visibility="invisible" >
+
+        <Button
+            android:id="@+id/nodelist_b1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:focusable="false"
+            android:text="编辑"
+            android:textSize="15sp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/nodelist_b2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="删除"
+            android:textSize="15sp"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/nodelist_relat2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nodelist_relat1"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/nodelist_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/head_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nodelist_iv"
+            android:text="测试123456789"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -31,41 +31,44 @@ import android.util.Log;
 
 /**
  * WebClient
+ * 
  * @author Jeffrey
- *
+ * 
  */
 public class WebClient {
-	
-	private static WebClient instance= null;
-	
+
+	private static WebClient instance = null;
+
 	DefaultHttpClient httpclient;
-	
+
 	private String host = "";
-	
+
 	private String LOGIN_URL1 = "";
-	
+
 	private String LOGIN_URL2 = "";
-	
+
 	private String tag = "WebClient";
-	
-	private WebClient(){};
-	
+
+	private WebClient() {
+	};
+
 	/**
 	 * Singleton
+	 * 
 	 * @return instance
 	 */
-	public static WebClient getInstance(){
+	public static WebClient getInstance() {
 		if (instance == null) {
 			instance = new WebClient();
 			instance.httpclient = new DefaultHttpClient();
-			
+
 			return instance;
-		}else{
+		} else {
 			return instance;
 		}
 	}
-	
-	public void init(Context con){
+
+	public void init(Context con) {
 		Configuration config = new Configuration(con);
 		String ports = config.getValue("ports");
 		if(ports.equals("0")){
@@ -82,42 +85,45 @@ public class WebClient {
 		httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
 		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Varkrs");
 	}
-	
+
 	/**
 	 * Login
-	 * @param pairs 
+	 * 
+	 * @param pairs
 	 * @return CookieStore
 	 */
-	public CookieStore Login(List<NameValuePair> pairs){
+	public CookieStore Login(List<NameValuePair> pairs) {
 
 		CookieStore localCookieStore = new BasicCookieStore();
-		
+
 		try {
 
-			// /zhishidian/user/  
-			Log.d(tag,pairs.get(0).getName()+ ": "+pairs.get(0).getValue());
-			Log.d(tag,"Login url="+LOGIN_URL1);
+			// /zhishidian/user/
+			Log.d(tag, pairs.get(0).getName() + ": " + pairs.get(0).getValue());
+			Log.d(tag, "Login url=" + LOGIN_URL1);
 			HttpGet httpGet = new HttpGet(LOGIN_URL1);
 			httpclient.execute(httpGet);
 			CookieStore cookieStore1 = httpclient.getCookieStore();
-			
-			Log.d(tag,"cookie host=" + cookieStore1.getCookies().get(0).getDomain());
-			Log.d(tag,"cookie hostports=" + cookieStore1.getCookies().get(0).getPorts());
+
+			Log.d(tag, "cookie host="
+					+ cookieStore1.getCookies().get(0).getDomain());
+			Log.d(tag, "cookie hostports="
+					+ cookieStore1.getCookies().get(0).getPorts());
 
 			HttpContext context = new BasicHttpContext();
 
-			Log.d(tag,"Login url2 = " + LOGIN_URL2);
+			Log.d(tag, "Login url2 = " + LOGIN_URL2);
 			// session
 			HttpPost httpPost = new HttpPost(LOGIN_URL2);
 			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
 			httpclient.setCookieStore(cookieStore1);
 			HttpResponse response2 = httpclient.execute(httpPost, context);
-			Log.v("WEBCLIENT",response2.getStatusLine().toString());
-			
-			//cookie
+			Log.v("WEBCLIENT", response2.getStatusLine().toString());
+
+			// cookie
 			HttpGet httpGet2 = new HttpGet(LOGIN_URL1);
 			httpclient.execute(httpGet2);
-			
+
 			localCookieStore = httpclient.getCookieStore();
 
 			HttpUriRequest currentReq = (HttpUriRequest) context
@@ -125,12 +131,12 @@ public class WebClient {
 			HttpHost currentHost = (HttpHost) context
 					.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
 			String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq
-					.getURI().toString()
-					: (currentHost.toURI() + currentReq.getURI());
-		    Log.d("WEBCLIENT","return url:"+currentUrl);
-		    
-		    httpclient.getConnectionManager().closeExpiredConnections();
-			
+					.getURI().toString() : (currentHost.toURI() + currentReq
+					.getURI());
+			Log.d("WEBCLIENT", "return url:" + currentUrl);
+
+			httpclient.getConnectionManager().closeExpiredConnections();
+
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -139,32 +145,35 @@ public class WebClient {
 
 		return localCookieStore;
 	}
-	
+
 	/**
 	 * Get Data
-	 * @param relatedurl url
-	 * @param cookieStore local CookieStore
+	 * 
+	 * @param relatedurl
+	 *            url
+	 * @param cookieStore
+	 *            local CookieStore
 	 * @return data
 	 */
-	public String GetData(String relatedurl,CookieStore cookieStore){
-		
+	public String GetData(String relatedurl, CookieStore cookieStore) {
+
 		String result = "";
-		
+
 		httpclient.setCookieStore(cookieStore);
 
 		// HTTPGET
 		String url = host + relatedurl;
-		
-		Log.d(tag,"url=" + url);
-		
-		Log.d(tag,"session="+cookieStore.getCookies().get(0).getValue());
-		
-		Log.d(tag,"sessionhost="+cookieStore.getCookies().get(0).getDomain());
+
+		Log.d(tag, "url=" + url);
+
+		Log.d(tag, "session=" + cookieStore.getCookies().get(0).getValue());
+
+		Log.d(tag, "sessionhost=" + cookieStore.getCookies().get(0).getDomain());
 
 		HttpGet httpGet = new HttpGet(url);
 
 		try {
-			
+
 			HttpResponse httpResponse = httpclient.execute(httpGet);
 			result = EntityUtils.toString(httpResponse.getEntity());
 		} catch (ClientProtocolException e) {
@@ -175,26 +184,28 @@ public class WebClient {
 
 		return result;
 	}
-	
-	public String PostData(String url,CookieStore cookieStore,List<NameValuePair> nameValuePairs){
-		
+
+	public String PostData(String url, CookieStore cookieStore,
+			List<NameValuePair> nameValuePairs) {
+
 		String resultstr = null;
 		httpclient.setCookieStore(cookieStore);
-		
+
 		url = host + url;
-		
-		Log.v("WEBCLIENT.PostData","url="+url);
-        
+
+		Log.v("WEBCLIENT.PostData", "url=" + url);
+
 		HttpPost httpPost = new HttpPost(url);
-		
+
 		try {
-			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.UTF_8));
-			
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,
+					HTTP.UTF_8));
+
 			HttpResponse response = httpclient.execute(httpPost);
-	         
-	         resultstr =EntityUtils.toString(response.getEntity());
-	         
-	         Log.d("WEBCLIENT.POSTDATA","return"+resultstr);
+
+			resultstr = EntityUtils.toString(response.getEntity());
+
+			Log.d("WEBCLIENT.POSTDATA", "return" + resultstr);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
@@ -203,20 +214,18 @@ public class WebClient {
 			e.printStackTrace();
 		}
 
-        
-         
 		return resultstr;
 	}
-	
-	public String DelData(String url,CookieStore cookieStore) {
-		
+
+	public String DelData(String url, CookieStore cookieStore) {
+
 		String resultstr = null;
 		httpclient.setCookieStore(cookieStore);
-		
+
 		url = host + url;
-		
+
 		HttpDelete httpDel = new HttpDelete(url);
-		
+
 		HttpResponse response;
 		try {
 			response = httpclient.execute(httpDel);
@@ -226,8 +235,8 @@ public class WebClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return resultstr;
 	}
-		
+
 }

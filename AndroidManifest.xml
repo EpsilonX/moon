@@ -7,7 +7,8 @@
     <uses-sdk android:minSdkVersion="8" />
 
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
-    <uses-permission android:name="android.permission.INTERNET" ></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
@@ -20,24 +21,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-       <uses-library android:name="android.test.runner" />
-       <activity
+
+        <uses-library android:name="android.test.runner" />
+
+        <activity
             android:name=".LoginActivity"
             android:label="@string/app_name" >
         </activity>
-       <activity 
-           	android:name=".DBActivity"
-           	android:label="@string/app_name">
-       </activity> 
-       <activity 
+        <activity
+            android:name=".DBActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name=".OptActivity"
-            android:label="@string/app_name">
-       </activity>
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".NodeListActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".NodeNextActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
-    
-    <instrumentation  
-         android:targetPackage="com.shunote"
-         android:name="android.test.InstrumentationTestRunner"
-         android:label="AndroidJUnit" />
+
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:label="AndroidJUnit"
+        android:targetPackage="com.shunote" />
 
 </manifest>
