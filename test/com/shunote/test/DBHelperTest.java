@@ -36,19 +36,19 @@ public class DBHelperTest extends ActivityInstrumentationTestCase2<DBActivity> {
 		dba.insertNote(note);
 	}
 	
-//	public void testUpdateNote(){
-//		String tag = "testUpdateNote";
-//		Log.e(tag,"start test update note:");
-//		Note note = new Note(2, "fuck",1,"blabal");
-//		dba.updateNote(note);
-//		Note note2 = dba.getNote().get(0);
-//		assertEquals("fuck", note2.getName());
-//	}
+	public void testUpdateNote(){
+		String tag = "testUpdateNote";
+		Log.e(tag,"start test update note:");
+		Note note = new Note(2, "fuck",1,"blabal");
+		dba.updateNote(note);
+		Note note2 = dba.getNote().get(0);
+		assertEquals("fuck", note2.getName());
+	}
 	
-//	public void testDelNote(){
-//		dba.delNote(1);
-//		Note note = dba.getNote().get(0);
-//		assertEquals(2,note.getId());		
-//	}
+	public void testDelNote(){
+		dba.delNote(1);
+		Note note = dba.getNote().get(0);
+		assertEquals(2,note.getId());		
+	}
 	
 }

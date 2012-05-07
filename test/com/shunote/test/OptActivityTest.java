@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import com.shunote.OptActivity;
 import com.shunote.Entity.Note;
+import com.shunote.Exception.CacheException;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -23,10 +24,25 @@ public class OptActivityTest extends ActivityInstrumentationTestCase2<OptActivit
 	}
 	
 	@Test
-	public void testAddNote(){
+	public void testAddNoteS(){
 		String title;
 			title = new String("试试看");
-			opt.addNote(title);		
+			try {
+				opt.addNote(title);
+				assertTrue(true);
+			} catch (CacheException e) {
+				fail("wrong hole");
+			}		
+	}
+	
+	@Test
+	public void testAddNoteF(){
+		try {
+			opt.addNote(null);
+			fail("wrong hole");
+		}catch (CacheException e){
+			assertTrue(true);
+		}
 	}
 	
 //	@Test

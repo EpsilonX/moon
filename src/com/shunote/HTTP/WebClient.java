@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
@@ -69,18 +70,20 @@ public class WebClient {
 
 	public void init(Context con) {
 		Configuration config = new Configuration(con);
-		host = "http://" + config.getValue("host") + ":"
-				+ config.getValue("ports");
-		// host = "http://" + config.getValue("host");
-		LOGIN_URL1 = host + "/zhishidian/user";
-		LOGIN_URL2 = host + "/j_security_check";
+		String ports = config.getValue("ports");
+		if(ports.equals("0")){
+			host = "http://" + config.getValue("host");
+		}else{
+			host = "http://"+config.getValue("host") + ":" + ports;
+		}
+		LOGIN_URL1 = host+"/zhishidian/user";
+		LOGIN_URL2 = host+"/j_security_check";
 		host = host + "/zhishidian";
-		Log.d(tag, "host=" + host);
-
-		httpclient.getParams().setParameter(
-				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
-		httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,
-				5000);
+		Log.d(tag,"host="+host);
+		
+		httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+		httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Varkrs");
 	}
 
 	/**

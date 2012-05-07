@@ -65,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void insertNote(Note note){
+		
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put("id", note.getId());
