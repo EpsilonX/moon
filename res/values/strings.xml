@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, ShunoteActivity!</string>
-    <string name="app_name">Shunote</string>
+    <string name="app_name">ShuNote</string>
     <string name="back">返回</string>
     <string name="refresh">刷新</string>
     <string name="name">书笔记</string>

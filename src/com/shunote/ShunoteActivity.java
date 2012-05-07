@@ -144,7 +144,6 @@ public class ShunoteActivity extends Activity {
 
 		MyAdapter() {
 			super(ShunoteActivity.this, R.layout.note_item, noteList);
-
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {

@@ -158,6 +158,13 @@ public class NodeListActivity extends Activity {
 		});
 
 	}
+	
+	// @Override
+	// public void onItemClick(AdapterView<?> parent, View view,
+	// int position, long id){
+	//
+	// }
+	
 
 	public class NodeAdapter extends ArrayAdapter<Node> {
 

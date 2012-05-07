@@ -25,8 +25,11 @@ public final class R {
         public static final int nodelist_iv=0x7f05000d;
         public static final int nodelist_relat1=0x7f050009;
         public static final int nodelist_relat2=0x7f05000c;
-        public static final int noteitem=0x7f05000f;
-        public static final int notelist_list=0x7f050010;
+        public static final int note_new=0x7f050011;
+        public static final int note_refresh=0x7f050012;
+        public static final int note_time=0x7f05000f;
+        public static final int noteitem=0x7f050010;
+        public static final int notelist_list=0x7f050013;
         public static final int out=0x7f050003;
         public static final int password=0x7f050001;
         public static final int refresh=0x7f050006;
