@@ -142,9 +142,11 @@ public class Cache{
 	 * @param note
 	 * @param url
 	 * @return noteid , else -1
+	 * @throws CacheException 
 	 */
-	public int addNote(String title){
+	public int addNote(String title) throws CacheException{
 		String url = "/users/" + userid + "/nodes";
+		Log.d(tag,title);
 		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		pairs.add(new BasicNameValuePair("title",title));
 		pairs.add(new BasicNameValuePair("parentid","-1"));
@@ -154,7 +156,7 @@ public class Cache{
 			JSONObject objr = new JSONObject(result);
 				if (Integer.parseInt(objr.getString("result"))<0){
 					Log.d("Cache.addNote()","unable to upload new Note to server!");
-					return -1;
+					throw new CacheException("unable to upload new Note to server!");
 				}else{
 					JSONObject obj = objr.getJSONObject("data");
 					Log.d("Cache.addNote()","upload a new Note to server!");
@@ -165,10 +167,8 @@ public class Cache{
 			
 		} catch (JSONException e) {
 			Log.e("Cache.addNote()","JSON wrong in addNote()");
-			e.printStackTrace();
+			throw new CacheException("JSON wrong in addNote()",e);
 		}
-		
-		return -1;
 		
 	}
 	
@@ -177,8 +177,9 @@ public class Cache{
 	 * @param note
 	 * @param url
 	 * @return noteid, else -1
+	 * @throws CacheException 
 	 */
-	public int updateNote(Note note) {
+	public int updateNote(Note note) throws CacheException {
 		String url = "/users/" + userid + "/usernodes/" + note.getId();
 		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		pairs.add(new BasicNameValuePair("title", note.getName()));
@@ -190,8 +191,8 @@ public class Cache{
 			JSONObject obj = new JSONObject(result);
 
 			if (Integer.parseInt(obj.getString("result"))<0){
-					Log.d("Cache.updateNote()","unable to update Note to server!");
-					return -1;
+				Log.d("Cache.updateNote()","unable to update Note to server!");
+				throw new CacheException("unable to update Note to server!");
 			}else{
 				Log.d("Cache.updateNote()","update a Note to server! id = " + note.getId());
 				Note newnote = new Note(note.getId(),note.getName(),note.getRoot(),note.getJson());
@@ -200,10 +201,9 @@ public class Cache{
 			}
 			
 		} catch (JSONException e) {
-			Log.e("Cache.updateNote()","JSON wrong in addNote()");
-			e.printStackTrace();
+			Log.e("Cache.updateNote()","JSON wrong in updateNote()");
+			throw new CacheException("JSON wrong in updateNote()",e);
 		}
-		return -1;
 
 	}
 	
@@ -211,8 +211,9 @@ public class Cache{
 	 * del Note
 	 * @param noteid
 	 * @return noteid, else -1
+	 * @throws CacheException 
 	 */
-	public int delNote(int noteid){
+	public int delNote(int noteid) throws CacheException{
 		String url = "/users/"+userid+"/usernodes/" + noteid;
 		
 		String result = webClient.DelData(url, cookieStore);
@@ -223,7 +224,7 @@ public class Cache{
 			if(obj.has("result")){
 				if (Integer.parseInt(obj.getString("result"))<0){
 					Log.d("Cache.delNote()","unable to delete Note in server!");
-					return -1;
+					throw new CacheException("del note failed!");
 				}else{
 					Log.d("Cache.delNote()","delete note id=" + noteid + " success!");
 					dbHelper.delNote(noteid);
@@ -232,14 +233,12 @@ public class Cache{
 			}
 			else{
 				Log.d("Cache.delNote()","unable to delete Note in server!");
-				return -1;
+				throw new CacheException("del note failed!");
 			}
 		} catch (JSONException e) {
 			Log.e("Cache.delNote()","JSON wrong in delNote()");
-			e.printStackTrace();
+			throw new CacheException("JSON wrong in delNote()",e);
 		}
-		
-		return -1;
 		
 	}
 	
@@ -270,7 +269,7 @@ public class Cache{
 				node.setId(obj.getJSONObject("data").getInt("id"));
 			}
 		}catch(JSONException e){
-			e.printStackTrace();
+			throw new CacheException("JSON wrong in addNode()",e);
 		}
 		
 		try{
@@ -312,7 +311,7 @@ public class Cache{
 				throw new CacheException("update node to server failed");
 			}			
 		}catch(JSONException e){
-			e.printStackTrace();
+			throw new CacheException("JSON wrong in updateNode()",e);
 		}
 		
 		try{
@@ -347,7 +346,7 @@ public class Cache{
 				throw new CacheException("del node to server failed");
 			}			
 		}catch(JSONException e){
-			e.printStackTrace();
+			throw new CacheException("JSON wrong in delNode()",e);
 		}
 		
 		try{
@@ -409,7 +408,7 @@ public class Cache{
 				throw new CacheException("update node to server failed");
 			}			
 		}catch(JSONException e){
-			e.printStackTrace();
+			throw new CacheException("JSON wrong in changePosition()",e);
 		}
 		
 		try{
