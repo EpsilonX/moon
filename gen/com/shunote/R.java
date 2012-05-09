@@ -46,10 +46,11 @@ public final class R {
         public static final int note_item_single=0x7f020020;
     }
     public static final class id {
-        public static final int back=0x7f050005;
         public static final int head_content=0x7f05000e;
         public static final int head_title=0x7f050008;
         public static final int login=0x7f050002;
+        public static final int node_back=0x7f050005;
+        public static final int node_refresh=0x7f050006;
         public static final int nodeitem=0x7f050004;
         public static final int nodelist=0x7f050007;
         public static final int nodelist_b1=0x7f05000a;
@@ -70,7 +71,6 @@ public final class R {
         public static final int notelist_list=0x7f050019;
         public static final int out=0x7f050003;
         public static final int password=0x7f050001;
-        public static final int refresh=0x7f050006;
         public static final int username=0x7f050000;
     }
     public static final class layout {

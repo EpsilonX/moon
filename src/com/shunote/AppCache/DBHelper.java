@@ -27,7 +27,8 @@ public class DBHelper extends SQLiteOpenHelper {
 						+"id INTEGER PRIMARY KEY,"
 						+"name varchar(20),"
 						+"root INTEGER,"
-						+"json TEXT)");		
+						+"json TEXT,"
+						+"date TEXT)");		
 		db.execSQL("CREATE TABLE IF NOT EXISTS Image("
 						+"id INTEGER PRIMARY KEY AUTOINCREMENT,"
 						+"url TEXT,"
@@ -56,7 +57,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] params = {Integer.toString(id)};
 		Cursor result = db.query("Note", columns, "id=?", params, null, null, null);
 		if(result.moveToFirst()){
-			note = new Note(result.getInt(0), result.getString(1),result.getInt(2), result.getString(3));
+			note = new Note(result.getInt(0), result.getString(1),result.getInt(2), result.getString(3), result.getString(4));
 			Log.d(tag,"get Note title = " + note.getName());
 		}else{
 			Log.e(tag,"failed to get Note id=" + id);
@@ -104,7 +105,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			String name = result.getString(1);
 			int root = result.getInt(2);
 			String json = result.getString(3);
-			Note note = new Note(id,name,root,json);
+			String date = result.getString(4);
+			Note note = new Note(id,name,root,json,date);
 			noteList.add(note);
 			result.moveToNext();
 			total++;

@@ -12,15 +12,24 @@ public class Note {
 	private String name;
 	private int root;
 	private String json;
-	
-	public Note(int id, String name, int root,String json) {
+	private String date;
+	public Note(int id, String name, int root,String json,String date) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.root = root;
 		this.json = json;
+		this.date = date;
 	}
 	
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public int getId() {
 		return id;
 	}
