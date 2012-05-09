@@ -7,39 +7,53 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="7.5" >
+        android:layout_weight="7"
+        android:background="@drawable/bg_header" >
 
         <Button
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/back" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/button_return_select"
+            android:paddingLeft="10dp"
+            android:text="@string/back"
+            android:textColor="#ffffff"
+            android:textSize="21sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/name"
-            android:textSize="18sp" />
+            android:text="书 &apos;笔记"
+            android:textColor="#ffffff"
+            android:textSize="30sp" />
 
-        <Button
+        <ImageButton
             android:id="@+id/refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="@string/refresh" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/button_select"
+            android:src="@drawable/icon_refresh" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1.0" >
+        android:layout_weight="1.0"
+        android:background="@drawable/bg_all_repeat" >
 
         <com.shunote.ListViewDrag
             android:id="@+id/nodelist"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginTop="5dp" >
+            android:divider="@drawable/bg_all_repeat"
+            android:dividerHeight="9dp"
+            android:listSelector="#00000000" >
         </com.shunote.ListViewDrag>
     </LinearLayout>
 

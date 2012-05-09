@@ -11,6 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -56,6 +62,27 @@ public class NodeNextActivity extends Activity {
 
 		nodeAdapter = new NodeAdapter();
 		nodelist.setAdapter(nodeAdapter);
+
+		AnimationSet set = new AnimationSet(true);
+
+		// 渐变透明度动画效果
+		Animation animation = new AlphaAnimation(0.0f, 1.0f);
+		animation.setDuration(150);
+		set.addAnimation(animation);
+
+		// 画面转换位置移动动画效果
+		animation = new TranslateAnimation(-100, -50.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f, 50, -1.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f);
+		animation.setDuration(200);
+		set.addAnimation(animation);
+
+		LayoutAnimationController controller = new LayoutAnimationController(
+				set, 0.5f);
+
+		controller.setInterpolator(new AccelerateDecelerateInterpolator());
+
+		nodelist.setLayoutAnimation(controller);
 
 		cache = Cache.getInstance();
 

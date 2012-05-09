@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import com.shunote.HTTP.WebClient;
 
 public class ShunoteActivity extends Activity {
 	/** Called when the activity is first created. */
+
 	String PREFS_NAME = ""; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
 	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST; // SP's Tag
@@ -42,11 +45,17 @@ public class ShunoteActivity extends Activity {
 	ArrayList<Note> noteList = new ArrayList<Note>();
 	TextView tv;
 	ListView listview;
+	View relat, liner;
 	MyAdapter myAdapter;
+	ProgressDialog mProgressDialog;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.note_list);
+
+		// DisplayMetrics dm = getResources().getDisplayMetrics();
+		// int i = dm.densityDpi;
+		// Log.d("TAG_DPI", String.valueOf(i));
 
 		Configuration config = new Configuration(this);
 		PREFS_NAME = config.getValue("SPTAG");
@@ -55,6 +64,9 @@ public class ShunoteActivity extends Activity {
 
 		tv = (TextView) findViewById(R.id.out);
 		listview = (ListView) findViewById(R.id.notelist_list);
+		relat = (View) findViewById(R.id.note_relat);
+		liner = (View) findViewById(R.id.note_liner);
+		// pb = (ProgressBar) findViewById(R.id.note_pb);
 
 		myAdapter = new MyAdapter();
 
@@ -80,21 +92,22 @@ public class ShunoteActivity extends Activity {
 
 		AnimationSet set = new AnimationSet(true);
 
+		// 渐变透明度动画效果
 		Animation animation = new AlphaAnimation(0.0f, 1.0f);
-		animation.setDuration(10);
+		animation.setDuration(150);
 		set.addAnimation(animation);
 
-		animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, -10.0f,
-				Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
-				-1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
-		animation.setDuration(250);
-		animation.setInterpolator(new AccelerateDecelerateInterpolator());
+		// 画面转换位置移动动画效果
+		animation = new TranslateAnimation(-100, -50.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f, 50, -1.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f);
+		animation.setDuration(200);
 		set.addAnimation(animation);
 
 		LayoutAnimationController controller = new LayoutAnimationController(
 				set, 0.5f);
 
-		// controller.setInterpolator(new AccelerateDecelerateInterpolator());
+		controller.setInterpolator(new AccelerateDecelerateInterpolator());
 
 		listview.setLayoutAnimation(controller);
 
@@ -123,26 +136,44 @@ public class ShunoteActivity extends Activity {
 	 */
 	class GetDataTask extends android.os.AsyncTask<String, Integer, String> {
 
+		protected void onPreExecute() {
+			super.onPreExecute();
+			showDialog(0);
+		}
+
 		@Override
 		protected String doInBackground(String... params) {
 
 			String result = "";
 
+			publishProgress(0);
+
 			// get Cookie
 			MyCookieStore myc = new MyCookieStore(JSESSIONID, SESSIONID, HOST);
 
+			publishProgress(30);
 			WebClient.getInstance().init(getApplicationContext());
 			// use WebClient's get data method
 			result = WebClient.getInstance().GetData(params[0],
 					myc.getCookieStore());
 
+			publishProgress(100);
 			Log.i("ShunoteActivity.GetDataTask", "result:" + result);
-			
+
 			return result;
 
 		}
 
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+
+			mProgressDialog.setProgress(values[0]);
+		}
+
 		protected void onPostExecute(String result) {
+
+			dismissDialog(0);
+
 			try {
 				JSONObject obj = new JSONObject(result);
 				JSONArray objects = obj.getJSONArray("data");
@@ -151,7 +182,8 @@ public class ShunoteActivity extends Activity {
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");
-					String name = StringEscapeUtils.unescapeHtml(objects.getJSONObject(i).getString("title"));
+					String name = StringEscapeUtils.unescapeHtml(objects
+							.getJSONObject(i).getString("title"));
 					int root = objects.getJSONObject(i).getInt("root");
 					Note note = new Note(id, name, root, null);
 					noteList.add(note);
@@ -183,16 +215,36 @@ public class ShunoteActivity extends Activity {
 			}
 			TextView label = (TextView) row.findViewById(R.id.noteitem);
 
-			// View liner = (View) row.findViewById(R.id.nodelist_relat1);
-			// Button b1 = (Button) liner.findViewById(R.id.nodelist_b1);
-			// b1.setVisibility(View.GONE);
-			String out = noteList.get(position).getName() + " id:"
-					+ noteList.get(position).getId();
+			String out = noteList.get(position).getName();
 			label.setText(out);
+
+			// 奇数设置背景1,偶数设置背景2
+			if (position % 2 == 0) {
+				row.setBackgroundResource(R.drawable.item_double_select);
+			} else {
+				row.setBackgroundResource(R.drawable.item_single_select);
+			}
+
 			return row;
 
 		}
 
+	}
+
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case 0: // we set this to 0
+			mProgressDialog = new ProgressDialog(this);
+			mProgressDialog.setMessage("正在加载数据...");
+			mProgressDialog.setIndeterminate(false);
+			mProgressDialog.setMax(500);
+			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			mProgressDialog.setCancelable(true);
+			mProgressDialog.show();
+			return mProgressDialog;
+		default:
+			return null;
+		}
 	}
 
 }
