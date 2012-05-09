@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="match_parent"
-	android:layout_height="match_parent">
-	<EditText 
-	android:id="@+id/username" 
-	android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
-    android:inputType="textEmailAddress">
-	<requestFocus></requestFocus>
-	</EditText>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-	<EditText 
-	android:id="@+id/password" 
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content" 
-	android:inputType="textPassword">
-	</EditText>
-	
-	<Button 
-	android:id="@+id/login"
-	android:text="登录"
-	android:layout_height="wrap_content"
-	android:layout_width="fill_parent"/>
-	
-	
-	
-	
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:text="agle_91@sina.cn" >
+
+        <requestFocus>
+        </requestFocus>
+    </EditText>
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:text="wu5yu1bing81013" >
+    </EditText>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="登录" />
+
 </LinearLayout>

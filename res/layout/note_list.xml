@@ -5,35 +5,46 @@
     android:orientation="vertical" >
 
     <RelativeLayout
+        android:id="@+id/note_relat"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="7" >
+        android:layout_weight="7"
+        android:background="@drawable/bg_header" >
 
         <ImageButton
             android:id="@+id/note_new"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/button_select"
+            android:src="@drawable/icon_new" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/name"
-            android:textSize="25sp" />
+            android:text="书 &apos;笔记"
+            android:textColor="#ffffff"
+            android:textSize="30sp" />
 
         <ImageButton
             android:id="@+id/note_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/button_select"
+            android:src="@drawable/icon_refresh" />
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/note_liner"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:background="@drawable/bg_all_repeat" >
 
         <ListView
             android:id="@+id/notelist_list"
