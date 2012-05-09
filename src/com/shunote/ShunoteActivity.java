@@ -1,8 +1,13 @@
 package com.shunote;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +17,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -182,7 +188,34 @@ public class ShunoteActivity extends Activity {
 
 			publishProgress(100);
 			Log.i("ShunoteActivity.GetDataTask", "result:" + result);
+			
+			// wrong result, login again
+			if(!result.startsWith("{")){
+				
+				Log.i("ShunoteActivity.GetDataTask","get data failed,login again!");
+				USERNAME = sp.getString("USERNAME", "");
+				PWD = sp.getString("PWD", "");
+				
+				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+				pairs.add(new BasicNameValuePair("j_username",USERNAME));
+				pairs.add(new BasicNameValuePair("j_password", PWD));
 
+				CookieStore localCookieStore = WebClient.getInstance().Login(pairs);
+				
+				//put cookie into sp
+				Editor spEditor = sp.edit();
+				List<Cookie> cookies = localCookieStore.getCookies();
+				for (Cookie c : cookies) {
+					spEditor.putString(c.getName(), c.getValue());
+				}
+				spEditor.commit();
+				
+				result = WebClient.getInstance().GetData(params[0],
+						localCookieStore);
+
+				Log.i("ShunoteActivity.GetDataTask", "second result:" + result);
+			}
+			
 			return result;
 
 		}
@@ -198,10 +231,9 @@ public class ShunoteActivity extends Activity {
 			dismissDialog(0);
 
 			try {
+				
 				JSONObject obj = new JSONObject(result);
 				JSONArray objects = obj.getJSONArray("data");
-
-				// JSONArray objects = new JSONArray(result);
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");

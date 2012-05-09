@@ -47,16 +47,16 @@ public class LoginActivity extends Activity {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void onClick(View v) {
-		
-			LoginTask login = new LoginTask();
+		public void onClick(View v) {			
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-			sp.edit().putString("USERNAME", username.getText().toString());
-			sp.edit().putString("PWD", pwd.getText().toString());
-			sp.edit().commit();
+			Editor spEditor = sp.edit();
+			spEditor.putString("USERNAME", username.getText().toString());
+			spEditor.putString("PWD", pwd.getText().toString());
+			spEditor.commit();
 			pairs.add(new BasicNameValuePair("j_username",
 					username.getText().toString()));
 			pairs.add(new BasicNameValuePair("j_password", pwd.getText().toString()));
+			LoginTask login = new LoginTask();
 			login.execute(pairs);	
 		}
 			
