@@ -26,6 +26,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,6 +34,12 @@ import com.shunote.AppCache.Configuration;
 import com.shunote.Entity.Note;
 import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
+
+/**
+ * show all note
+ * 
+ * @author silar
+ */
 
 public class ShunoteActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -48,6 +55,7 @@ public class ShunoteActivity extends Activity {
 	View relat, liner;
 	MyAdapter myAdapter;
 	ProgressDialog mProgressDialog;
+	ImageButton note_new, note_refresh;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,7 +74,8 @@ public class ShunoteActivity extends Activity {
 		listview = (ListView) findViewById(R.id.notelist_list);
 		relat = (View) findViewById(R.id.note_relat);
 		liner = (View) findViewById(R.id.note_liner);
-		// pb = (ProgressBar) findViewById(R.id.note_pb);
+		note_new = (ImageButton) findViewById(R.id.note_new);
+		note_refresh = (ImageButton) findViewById(R.id.note_refresh);
 
 		myAdapter = new MyAdapter();
 
@@ -90,8 +99,8 @@ public class ShunoteActivity extends Activity {
 			getData.execute(url);
 		}
 
+		// 设置动画效果
 		AnimationSet set = new AnimationSet(true);
-
 		// 渐变透明度动画效果
 		Animation animation = new AlphaAnimation(0.0f, 1.0f);
 		animation.setDuration(150);
@@ -106,9 +115,7 @@ public class ShunoteActivity extends Activity {
 
 		LayoutAnimationController controller = new LayoutAnimationController(
 				set, 0.5f);
-
 		controller.setInterpolator(new AccelerateDecelerateInterpolator());
-
 		listview.setLayoutAnimation(controller);
 
 		listview.setOnItemClickListener(new OnItemClickListener() {
@@ -123,6 +130,22 @@ public class ShunoteActivity extends Activity {
 				node.putExtra("ID", note.getId());
 				node.setClass(ShunoteActivity.this, NodeListActivity.class);
 				startActivity(node);
+			}
+		});
+
+		note_new.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		note_refresh.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
 			}
 		});
 

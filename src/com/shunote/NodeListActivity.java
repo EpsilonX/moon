@@ -24,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ public class NodeListActivity extends Activity {
 
 	private List<Node> sons = new ArrayList<Node>();
 	private NodeAdapter nodeAdapter;
+	private Button node_back;
+	private ImageButton node_refresh;
 
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -55,6 +58,8 @@ public class NodeListActivity extends Activity {
 		int id = getIntent().getIntExtra("ID", 0);
 		Log.d("ID_TAG", String.valueOf(id));
 
+		node_back = (Button) findViewById(R.id.node_back);
+		node_refresh = (ImageButton) findViewById(R.id.node_refresh);
 		nodelist = (ListViewDrag) findViewById(R.id.nodelist);
 
 		View head = LayoutInflater.from(this).inflate(R.layout.nodehead, null);
@@ -66,8 +71,8 @@ public class NodeListActivity extends Activity {
 		nodeAdapter = new NodeAdapter();
 		nodelist.setAdapter(nodeAdapter);
 
+		// 设置动画效果
 		AnimationSet set = new AnimationSet(true);
-
 		// 渐变透明度动画效果
 		Animation animation = new AlphaAnimation(0.0f, 1.0f);
 		animation.setDuration(150);
@@ -82,7 +87,6 @@ public class NodeListActivity extends Activity {
 
 		LayoutAnimationController controller = new LayoutAnimationController(
 				set, 0.5f);
-
 		controller.setInterpolator(new AccelerateDecelerateInterpolator());
 
 		nodelist.setLayoutAnimation(controller);
@@ -184,6 +188,21 @@ public class NodeListActivity extends Activity {
 			}
 		});
 
+		node_back.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		node_refresh.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
 	}
 
 	public class NodeAdapter extends ArrayAdapter<Node> {

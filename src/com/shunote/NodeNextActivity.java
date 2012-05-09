@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,8 @@ public class NodeNextActivity extends Activity {
 	private ListViewDrag nodelist;
 	private Cache cache = null;
 	private NodeAdapter nodeAdapter;
+	private Button node_back;
+	private ImageButton node_refresh;
 
 	private List<Node> sons = new ArrayList<Node>();
 
@@ -44,6 +47,8 @@ public class NodeNextActivity extends Activity {
 
 		Log.d("NodeNext", node.getTitle());
 
+		node_back = (Button) findViewById(R.id.node_back);
+		node_refresh = (ImageButton) findViewById(R.id.node_refresh);
 		nodelist = (ListViewDrag) findViewById(R.id.nodelist);
 
 		View head = LayoutInflater.from(this).inflate(R.layout.nodehead, null);
@@ -157,6 +162,22 @@ public class NodeNextActivity extends Activity {
 
 			}
 
+		});
+
+		node_back.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		node_refresh.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+			}
 		});
 
 	}
