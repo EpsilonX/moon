@@ -115,7 +115,7 @@ public class Cache{
 			}else{
 				JSONObject obj = objr.getJSONObject("data");
 				Log.d("Cache.getNote()","get Note from server!");
-				note = new Note(obj.getInt("id"),StringEscapeUtils.unescapeHtml(obj.getString("title")),obj.getInt("root") ,StringEscapeUtils.unescapeHtml(obj.getString("nodes")),obj.getString("createdate"));
+				note = new Note(obj.getInt("id"),StringEscapeUtils.unescapeHtml(obj.getString("title")),obj.getInt("root") ,StringEscapeUtils.unescapeHtml(obj.getString("nodes")),obj.getString("createdate"),obj.getInt("nodenum"));
 				Note dbNote = dbHelper.getNote(noteid);
 				if (dbNote==null){
 					Log.d("Cache.getNote()","insert new note into DB");
@@ -162,7 +162,7 @@ public class Cache{
 				}else{
 					JSONObject obj = objr.getJSONObject("data");
 					Log.d("Cache.addNote()","upload a new Note to server!");
-					Note note = new Note(obj.getInt("id"),obj.getString("title"),obj.getInt("root") ,obj.getString("nodes"),obj.getString("createdate"));
+					Note note = new Note(obj.getInt("id"),obj.getString("title"),obj.getInt("root") ,obj.getString("nodes"),obj.getString("createdate"),obj.getInt("nodenum"));
 					dbHelper.insertNote(note);
 					return note.getId();
 			}
@@ -197,7 +197,7 @@ public class Cache{
 				throw new CacheException("unable to update Note to server!");
 			}else{
 				Log.d("Cache.updateNote()","update a Note to server! id = " + note.getId());
-				Note newnote = new Note(note.getId(),note.getName(),note.getRoot(),note.getJson(),note.getDate());
+				Note newnote = new Note(note.getId(),note.getName(),note.getRoot(),note.getJson(),note.getDate(),note.getNodenum());
 				dbHelper.updateNote(newnote);
 				return newnote.getId();
 			}

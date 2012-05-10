@@ -154,6 +154,12 @@ public class ShunoteActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
+				noteList.clear();
+
+				GetDataTask getData = new GetDataTask();
+				String url = "/users/" + USERID + "/usernodes";
+				getData.execute(url);
+
 			}
 		});
 
@@ -190,34 +196,36 @@ public class ShunoteActivity extends Activity {
 
 			publishProgress(100);
 			Log.i("ShunoteActivity.GetDataTask", "result:" + result);
-			
+
 			// wrong result, login again
-			if(!result.startsWith("{")){
-				
-				Log.i("ShunoteActivity.GetDataTask","get data failed,login again!");
+			if (!result.startsWith("{")) {
+
+				Log.i("ShunoteActivity.GetDataTask",
+						"get data failed,login again!");
 				USERNAME = sp.getString("USERNAME", "");
 				PWD = sp.getString("PWD", "");
-				
+
 				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				pairs.add(new BasicNameValuePair("j_username",USERNAME));
+				pairs.add(new BasicNameValuePair("j_username", USERNAME));
 				pairs.add(new BasicNameValuePair("j_password", PWD));
 
-				CookieStore localCookieStore = WebClient.getInstance().Login(pairs);
-				
-				//put cookie into sp
+				CookieStore localCookieStore = WebClient.getInstance().Login(
+						pairs);
+
+				// put cookie into sp
 				Editor spEditor = sp.edit();
 				List<Cookie> cookies = localCookieStore.getCookies();
 				for (Cookie c : cookies) {
 					spEditor.putString(c.getName(), c.getValue());
 				}
 				spEditor.commit();
-				
+
 				result = WebClient.getInstance().GetData(params[0],
 						localCookieStore);
 
 				Log.i("ShunoteActivity.GetDataTask", "second result:" + result);
 			}
-			
+
 			return result;
 
 		}
@@ -233,7 +241,7 @@ public class ShunoteActivity extends Activity {
 			dismissDialog(0);
 
 			try {
-				
+
 				JSONObject obj = new JSONObject(result);
 				JSONArray objects = obj.getJSONArray("data");
 
@@ -242,11 +250,13 @@ public class ShunoteActivity extends Activity {
 					String name = StringEscapeUtils.unescapeHtml(objects
 							.getJSONObject(i).getString("title"));
 					int root = objects.getJSONObject(i).getInt("root");
-					String date = objects.getJSONObject(i).getString("createdate");
-//					Date d = new Date(date);
-//					DateFormat df=DateFormat.getDateInstance();
-//					Log.i("time", df.format(d) + "in" + name);
-					Note note = new Note(id, name, root, null,date);
+					String date = objects.getJSONObject(i).getString(
+							"createdate");
+					int nodenum =objects.getJSONObject(i).getInt("nodenum");
+					// Date d = new Date(date);
+					// DateFormat df=DateFormat.getDateInstance();
+					// Log.i("time", df.format(d) + "in" + name);
+					Note note = new Note(id, name, root, null, date,nodenum);
 					noteList.add(note);
 				}
 
@@ -275,9 +285,17 @@ public class ShunoteActivity extends Activity {
 
 			}
 			TextView label = (TextView) row.findViewById(R.id.noteitem);
+			TextView time = (TextView) row.findViewById(R.id.note_time);
+			TextView count = (TextView) row.findViewById(R.id.note_count);
 
 			String out = noteList.get(position).getName();
+			String date = noteList.get(position).getDate();
+			Date d = new Date(date);
+			DateFormat df = DateFormat.getDateInstance();
+			int nodenum = noteList.get(position).getNodenum();
 			label.setText(out);
+			time.setText(df.format(d));
+			count.setText(String.valueOf(nodenum));
 
 			// 奇数设置背景1,偶数设置背景2
 			if (position % 2 == 0) {

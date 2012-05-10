@@ -28,7 +28,9 @@ public class DBHelper extends SQLiteOpenHelper {
 						+"name varchar(20),"
 						+"root INTEGER,"
 						+"json TEXT,"
-						+"date TEXT)");		
+						+"date TEXT,"
+						+"nodenum INTEGER)");		
+		
 		db.execSQL("CREATE TABLE IF NOT EXISTS Image("
 						+"id INTEGER PRIMARY KEY AUTOINCREMENT,"
 						+"url TEXT,"
@@ -53,11 +55,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Note getNote(int id){
 		Note note = null;
 		SQLiteDatabase db = this.getReadableDatabase();
-		String[] columns = {"id","name","root","json"};
+		String[] columns = {"id","name","root","json","date","nodenum"};
 		String[] params = {Integer.toString(id)};
 		Cursor result = db.query("Note", columns, "id=?", params, null, null, null);
 		if(result.moveToFirst()){
-			note = new Note(result.getInt(0), result.getString(1),result.getInt(2), result.getString(3), result.getString(4));
+			note = new Note(result.getInt(0), result.getString(1),result.getInt(2), result.getString(3), result.getString(4),result.getInt(5));
 			Log.d(tag,"get Note title = " + note.getName());
 		}else{
 			Log.e(tag,"failed to get Note id=" + id);
@@ -73,6 +75,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put("name", note.getName());
 		cv.put("root", note.getRoot());
 		cv.put("json", note.getJson());
+		cv.put("date", note.getDate());
+		cv.put("nodenum", note.getNodenum());
 		if(db.insert("Note", "name", cv)!=-1){
 			Log.d(tag,"A new Note inserted! id= " + note.getId());
 		}else{
@@ -106,7 +110,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			int root = result.getInt(2);
 			String json = result.getString(3);
 			String date = result.getString(4);
-			Note note = new Note(id,name,root,json,date);
+			int nodenum = result.getInt(5);
+			Note note = new Note(id,name,root,json,date,nodenum);
 			noteList.add(note);
 			result.moveToNext();
 			total++;
@@ -123,6 +128,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put("name", note.getName());
 		cv.put("root", note.getRoot());
 		cv.put("json", note.getJson());
+		cv.put("nodenum", note.getNodenum());
 		if(db.update("Note", cv,"id=?", new String[]{String.valueOf(note.getId())})!=0){
 			Log.d(tag,"update note! id = "+ note.getId());
 		}else{

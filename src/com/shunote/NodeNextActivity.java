@@ -36,6 +36,7 @@ public class NodeNextActivity extends Activity {
 	private NodeAdapter nodeAdapter;
 	private Button node_back;
 	private ImageButton node_refresh;
+	private Node node;
 
 	private List<Node> sons = new ArrayList<Node>();
 
@@ -43,7 +44,7 @@ public class NodeNextActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.node_list);
 
-		Node node = (Node) getIntent().getSerializableExtra("node");
+		node = (Node) getIntent().getSerializableExtra("node");
 
 		Log.d("NodeNext", node.getTitle());
 
@@ -169,6 +170,18 @@ public class NodeNextActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
+				Intent next = new Intent();
+				Bundle mBundle = new Bundle();
+				if (node.getFather() != null) {
+					mBundle.putSerializable("node", node.getFather());
+					next.putExtras(mBundle);
+					next.setClass(NodeNextActivity.this, NodeNextActivity.class);
+
+				} else {
+					next.setClass(NodeNextActivity.this, ShunoteActivity.class);
+
+				}
+				startActivity(next);
 			}
 		});
 

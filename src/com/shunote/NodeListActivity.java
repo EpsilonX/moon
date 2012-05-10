@@ -7,6 +7,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,13 +51,18 @@ public class NodeListActivity extends Activity {
 	private NodeAdapter nodeAdapter;
 	private Button node_back;
 	private ImageButton node_refresh;
+	private TextView hTitle;
+	private String FContent;
+	private String Ftitle;
+	private int id;
+	private ProgressDialog mProgressDialog;
 
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.node_list);
 
-		int id = getIntent().getIntExtra("ID", 0);
+		id = getIntent().getIntExtra("ID", 0);
 		Log.d("ID_TAG", String.valueOf(id));
 
 		node_back = (Button) findViewById(R.id.node_back);
@@ -64,12 +71,11 @@ public class NodeListActivity extends Activity {
 
 		View head = LayoutInflater.from(this).inflate(R.layout.nodehead, null);
 
-		TextView hTitle = (TextView) head.findViewById(R.id.head_title);
+		hTitle = (TextView) head.findViewById(R.id.head_title);
 
 		nodelist.addHeaderView(head, null, true);
 
 		nodeAdapter = new NodeAdapter();
-		nodelist.setAdapter(nodeAdapter);
 
 		// 设置动画效果
 		AnimationSet set = new AnimationSet(true);
@@ -92,37 +98,15 @@ public class NodeListActivity extends Activity {
 		nodelist.setLayoutAnimation(controller);
 
 		cache = Cache.getInstance();
-
-		Note note = null;
 		try {
 			cache.init(this);
-			note = cache.getNote(id);
 		} catch (CacheException e) {
-			e.printStackTrace();
-		}
-
-		JSONObject ojson = null;
-
-		Node root = null;
-
-		try {
-			ojson = new JSONObject(note.getJson());
-			root = Transform.getInstance().json2Node(ojson);
-		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// root.getId();
-		String Ftitle = root.getTitle();
-		final String FContent = root.getContent();
-		root.getSons();
-
-		hTitle.setText(Ftitle);
-
-		for (Node n : root.getSons()) {
-			sons.add(n);
-		}
+		GetNoteTask task = new GetNoteTask();
+		task.execute(id);
 
 		nodelist.setOnItemClickListener(new OnItemClickListener() {
 
@@ -193,6 +177,10 @@ public class NodeListActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
+				Intent back = new Intent();
+				back.setClass(NodeListActivity.this, ShunoteActivity.class);
+				startActivity(back);
+
 			}
 		});
 
@@ -200,9 +188,73 @@ public class NodeListActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-
+				sons.clear();
+				GetNoteTask task = new GetNoteTask();
+				task.execute(id);
 			}
 		});
+	}
+
+	class GetNoteTask extends android.os.AsyncTask<Integer, Integer, String> {
+
+		protected void onPreExecute() {
+			super.onPreExecute();
+			showDialog(0);
+		}
+
+		@Override
+		protected String doInBackground(Integer... params) {
+			Note note = null;
+			try {
+				note = cache.getNote(params[0]);
+			} catch (CacheException e) {
+				e.printStackTrace();
+			}
+
+			return note.getJson();
+
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+
+			dismissDialog(0);
+
+			JSONObject ojson = null;
+
+			Node root = null;
+
+			try {
+				ojson = new JSONObject(result);
+				root = Transform.getInstance().json2Node(ojson);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// root.getId();
+			Ftitle = root.getTitle();
+			FContent = root.getContent();
+			root.getSons();
+
+			Log.d("NodeList", Ftitle);
+
+			hTitle.setText(Ftitle);
+
+			for (Node n : root.getSons()) {
+				sons.add(n);
+				Log.d("NodeList.son", n.getTitle());
+
+			}
+			nodelist.setAdapter(nodeAdapter);
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			// TODO Auto-generated method stub
+			mProgressDialog.setProgress(values[0]);
+		}
+
 	}
 
 	public class NodeAdapter extends ArrayAdapter<Node> {
@@ -232,6 +284,22 @@ public class NodeListActivity extends Activity {
 
 			return row;
 
+		}
+	}
+
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case 0: // we set this to 0
+			mProgressDialog = new ProgressDialog(this);
+			mProgressDialog.setMessage("正在加载数据...");
+			mProgressDialog.setIndeterminate(false);
+			mProgressDialog.setMax(500);
+			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			mProgressDialog.setCancelable(true);
+			mProgressDialog.show();
+			return mProgressDialog;
+		default:
+			return null;
 		}
 	}
 

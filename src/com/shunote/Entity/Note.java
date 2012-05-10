@@ -13,15 +13,25 @@ public class Note {
 	private int root;
 	private String json;
 	private String date;
-	public Note(int id, String name, int root,String json,String date) {
+	private int nodenum;
+	public Note(int id, String name, int root,String json,String date,int nodenum) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.root = root;
 		this.json = json;
 		this.date = date;
+		this.nodenum =nodenum;
 	}
 	
+	public int getNodenum() {
+		return nodenum;
+	}
+
+	public void setNodenum(int nodenum) {
+		this.nodenum = nodenum;
+	}
+
 	public String getDate() {
 		return date;
 	}
