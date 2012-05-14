@@ -37,6 +37,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shunote.AppCache.Configuration;
 import com.shunote.Entity.Note;
@@ -77,6 +78,11 @@ public class ShunoteActivity extends Activity {
 		PREFS_NAME = config.getValue("SPTAG");
 		HOST = config.getValue("host");
 		sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		
+		//check network
+		if(WebClient.hasInternet(this)==false){
+			Toast.makeText(getApplicationContext(), "当前网络不可用!", Toast.LENGTH_LONG);
+		}
 
 		tv = (TextView) findViewById(R.id.out);
 		listview = (ListView) findViewById(R.id.notelist_list);
