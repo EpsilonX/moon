@@ -256,11 +256,13 @@ public class WebClient {
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = manager.getActiveNetworkInfo();
 		if (info == null || !info.isConnected()) {
+			Log.d("Network","false");
 			return false;
 		}
 		if (info.isRoaming()) {
 			// here is the roaming option you can change it if you want to
 			// disable internet while roaming, just return false
+			Log.d("Network","true");
 			return true;
 		}
 		return true;

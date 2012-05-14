@@ -15,8 +15,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -39,8 +44,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shunote.AppCache.Cache;
 import com.shunote.AppCache.Configuration;
+import com.shunote.AppCache.DBHelper;
 import com.shunote.Entity.Note;
+import com.shunote.Exception.CacheException;
 import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 
@@ -65,11 +73,20 @@ public class ShunoteActivity extends Activity {
 	MyAdapter myAdapter;
 	ProgressDialog mProgressDialog;
 	ImageButton note_new, note_refresh;
+	private Context mContext;
+	private Activity mA;
+	private Cache cache;
+	
+	private boolean online = false;
+
+	private DBHelper dbHelper = null;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.note_list);
-
+		MyApplication.getInstance().addActivity(this);
+		mContext = this;
+		mA = this;
 		// DisplayMetrics dm = getResources().getDisplayMetrics();
 		// int i = dm.densityDpi;
 		// Log.d("TAG_DPI", String.valueOf(i));
@@ -78,11 +95,7 @@ public class ShunoteActivity extends Activity {
 		PREFS_NAME = config.getValue("SPTAG");
 		HOST = config.getValue("host");
 		sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-		
-		//check network
-		if(WebClient.hasInternet(this)==false){
-			Toast.makeText(getApplicationContext(), "当前网络不可用!", Toast.LENGTH_LONG);
-		}
+		dbHelper = new DBHelper(this);
 
 		tv = (TextView) findViewById(R.id.out);
 		listview = (ListView) findViewById(R.id.notelist_list);
@@ -98,19 +111,19 @@ public class ShunoteActivity extends Activity {
 		JSESSIONID = sp.getString("JSESSIONID", null);
 		SESSIONID = sp.getString("sessionid", null);
 
-		// if user does not login, start LoginActivity
-		if (USERID == null) {
-			Intent mIntent = new Intent(this, LoginActivity.class);
-			startActivity(mIntent);
-			finish();
-		} else {
-			Log.v(TAG, "USERID=" + USERID);
-			Log.v(TAG, "JSESSIONID=" + JSESSIONID);
-			Log.v(TAG, "SESSIONID=" + SESSIONID);
+		online = WebClient.hasInternet(this);
+		
+		offline_fetch();
 
-			GetDataTask getData = new GetDataTask();
-			String url = "/users/" + USERID + "/usernodes";
-			getData.execute(url);
+		// check network
+		if (online == false) {
+
+			Toast.makeText(this, "无法连接到网络，请检查网络配置", Toast.LENGTH_SHORT).show();
+
+		} else {
+
+			online_fetch();
+
 		}
 
 		// 设置动画效果
@@ -160,15 +173,57 @@ public class ShunoteActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
-				noteList.clear();
+				// check network
+				online = WebClient.hasInternet(mA);
+				
+				if (online == false) {
 
-				GetDataTask getData = new GetDataTask();
-				String url = "/users/" + USERID + "/usernodes";
-				getData.execute(url);
+					Toast.makeText(mContext, "无法连接到网络，请检查网络配置", Toast.LENGTH_SHORT)
+							.show();
+
+				} else {
+
+					online_fetch();
+
+				}
 
 			}
 		});
 
+	}
+
+	public void offline_fetch() {
+		
+		ArrayList<Note> list = dbHelper.getNoteList();
+		
+		if(list.size()==0){
+			Toast.makeText(mContext, "没有数据，请先连接网络", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		for (Note n : list) {
+			noteList.add(n);
+		}
+
+		listview.setAdapter(myAdapter);
+	}
+
+	public void online_fetch() {
+		// if user does not login, start LoginActivity
+		if (USERID == null) {
+			Intent mIntent = new Intent(this, LoginActivity.class);
+			startActivity(mIntent);
+			finish();
+		} else {
+			Log.v(TAG, "USERID=" + USERID);
+			Log.v(TAG, "JSESSIONID=" + JSESSIONID);
+			Log.v(TAG, "SESSIONID=" + SESSIONID);
+
+			noteList.clear();
+
+			GetDataTask getData = new GetDataTask();
+			String url = "/users/" + USERID + "/usernodes";
+			getData.execute(url);
+		}
 	}
 
 	/**
@@ -253,17 +308,24 @@ public class ShunoteActivity extends Activity {
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");
-					String name = StringEscapeUtils.unescapeHtml(objects
-							.getJSONObject(i).getString("title"));
-					int root = objects.getJSONObject(i).getInt("root");
-					String date = objects.getJSONObject(i).getString(
-							"createdate");
-					int nodenum =objects.getJSONObject(i).getInt("nodenum");
-					// Date d = new Date(date);
-					// DateFormat df=DateFormat.getDateInstance();
-					// Log.i("time", df.format(d) + "in" + name);
-					Note note = new Note(id, name, root, null, date,nodenum);
-					noteList.add(note);
+					Note note;
+					try {
+						cache = Cache.getInstance();
+						cache.init(mContext);
+						note = cache.getNote(id);
+						Note dbNote = dbHelper.getNote(id);
+						if ( dbNote== null) {
+							dbHelper.insertNote(note);
+						}else{
+							if(dbNote.equals(note)==false){
+								dbHelper.updateNote(note);
+							}
+						}
+						noteList.add(note);
+					} catch (CacheException e) {
+						e.printStackTrace();
+					}
+					
 				}
 
 			} catch (JSONException e) {
@@ -330,6 +392,35 @@ public class ShunoteActivity extends Activity {
 		default:
 			return null;
 		}
+	}
+
+	/**
+	 * 重写Backt键方法，弹出对话框，确定是否要关闭程序
+	 */
+
+	@Override
+	public void onBackPressed() {
+		new AlertDialog.Builder(this).setTitle("温馨提示")
+				.setMessage("您是否要退出书'笔记？")
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stubgo
+
+						MyApplication.getInstance().exit();
+
+					}
+				})
+				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+
+					}
+				}).show();
+
 	}
 
 }

@@ -93,7 +93,7 @@ public class Cache{
 			throw new CacheException("init failed!",e);			
 		}		
 	}
-	
+
 	
 	/**
 	 *  get Note

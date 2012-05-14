@@ -6,6 +6,8 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,12 +39,14 @@ public class NodeNextActivity extends Activity {
 	private Button node_back;
 	private ImageButton node_refresh;
 	private Node node;
+	private String FContent;
 
 	private List<Node> sons = new ArrayList<Node>();
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.node_list);
+		MyApplication.getInstance().addActivity(this);
 
 		node = (Node) getIntent().getSerializableExtra("node");
 
@@ -57,7 +61,7 @@ public class NodeNextActivity extends Activity {
 		TextView hTitle = (TextView) head.findViewById(R.id.head_title);
 
 		String Ftitle = node.getTitle();
-		final String FContent = node.getContent();
+		FContent = node.getContent();
 		hTitle.setText(Ftitle);
 
 		for (Node n : node.getSons()) {
@@ -106,20 +110,22 @@ public class NodeNextActivity extends Activity {
 				// TODO Auto-generated method stub
 
 				if (id == -1) {
-					View relat1 = (View) view
-							.findViewById(R.id.nodelist_relat1);
-					View relat2 = (View) view
-							.findViewById(R.id.nodelist_relat2);
+					View relat1 = (View) view.findViewById(R.id.head_relat1);
+					View relat2 = (View) view.findViewById(R.id.head_relat2);
 
 					if (relat1.getVisibility() == View.INVISIBLE
 							|| relat2.getVisibility() == View.GONE) {
-						relat1.setVisibility(View.VISIBLE);
+						// relat1.setVisibility(View.VISIBLE);
 						relat2.setVisibility(View.VISIBLE);
 
-						TextView hContent = (TextView) relat2
+						FloatImageText hContent = (FloatImageText) relat2
 								.findViewById(R.id.head_content);
 						hContent.setVisibility(View.VISIBLE);
 						hContent.setText(FContent);
+
+						Bitmap bm = BitmapFactory.decodeResource(
+								getResources(), R.drawable.ic_launcher);
+						hContent.setImageBitmap(bm, 0, 0);
 
 						Button b1 = (Button) relat1
 								.findViewById(R.id.nodelist_b1);
@@ -137,7 +143,7 @@ public class NodeNextActivity extends Activity {
 						});
 
 					} else {
-						relat1.setVisibility(View.INVISIBLE);
+						// relat1.setVisibility(View.INVISIBLE);
 						relat2.setVisibility(View.GONE);
 					}
 				} else {
@@ -177,9 +183,9 @@ public class NodeNextActivity extends Activity {
 					next.putExtras(mBundle);
 					next.setClass(NodeNextActivity.this, NodeNextActivity.class);
 
-				} else {
+				} else {					
+					next.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 					next.setClass(NodeNextActivity.this, ShunoteActivity.class);
-
 				}
 				startActivity(next);
 			}
@@ -223,5 +229,23 @@ public class NodeNextActivity extends Activity {
 			return row;
 
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+
+		Intent back = new Intent();
+		Bundle mBundle = new Bundle();
+		if (node.getFather() != null) {
+			mBundle.putSerializable("node", node.getFather());
+			back.putExtras(mBundle);
+			back.setClass(NodeNextActivity.this, NodeNextActivity.class);
+
+		} else {
+			back.setClass(NodeNextActivity.this, ShunoteActivity.class);
+			back.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		}
+		startActivity(back);
+
 	}
 }

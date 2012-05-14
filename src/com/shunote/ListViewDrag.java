@@ -175,7 +175,7 @@ public class ListViewDrag extends ListView {
 											- getFirstVisiblePosition());
 
 									final View del = item
-											.findViewById(R.id.nodelist_relat1);
+											.findViewById(R.id.head_relat1);
 									del.setVisibility(View.VISIBLE);
 
 									Button delete = (Button) del

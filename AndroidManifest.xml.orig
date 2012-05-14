@@ -8,7 +8,11 @@
 
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+<<<<<<< HEAD
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+=======
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+>>>>>>> 29c15bafac0bfeb86f42dae6914c3381cf1593ff
 
     <application
         android:icon="@drawable/ic_launcher"

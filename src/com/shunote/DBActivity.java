@@ -9,30 +9,32 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class DBActivity extends Activity {
-	private  DBHelper dbhelper ;
+	private DBHelper dbhelper;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbhelper = new DBHelper(this);	
+		MyApplication.getInstance().addActivity(this);
+		dbhelper = new DBHelper(this);
 	}
-	
-	public void insertNote(Note note){
+
+	public void insertNote(Note note) {
 		dbhelper.insertNote(note);
 	}
-	
-	public ArrayList<Note> getNote(){
+
+	public ArrayList<Note> getNote() {
 		return dbhelper.getNoteList();
 	}
-	
-	public void updateNote(Note note){
+
+	public void updateNote(Note note) {
 		dbhelper.updateNote(note);
 	}
-	
-	public void delNote(int id){
+
+	public void delNote(int id) {
 		dbhelper.delNote(id);
 	}
-	
-	public void insertIMG(Image image){
+
+	public void insertIMG(Image image) {
 		dbhelper.insertIMG(image.getUrl(), image.getData());
 	}
 
