@@ -15,6 +15,7 @@ public class OptActivity extends Activity {
 	
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		MyApplication.getInstance().addActivity(this);
 		
 		cache = Cache.getInstance();
 		try{

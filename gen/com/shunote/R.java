@@ -46,7 +46,9 @@ public final class R {
         public static final int note_item_single=0x7f020020;
     }
     public static final class id {
-        public static final int head_content=0x7f05000e;
+        public static final int head_content=0x7f05000d;
+        public static final int head_relat1=0x7f050009;
+        public static final int head_relat2=0x7f05000c;
         public static final int head_title=0x7f050008;
         public static final int login=0x7f050002;
         public static final int node_back=0x7f050005;
@@ -55,20 +57,17 @@ public final class R {
         public static final int nodelist=0x7f050007;
         public static final int nodelist_b1=0x7f05000a;
         public static final int nodelist_b2=0x7f05000b;
-        public static final int nodelist_iv=0x7f05000d;
-        public static final int nodelist_relat1=0x7f050009;
-        public static final int nodelist_relat2=0x7f05000c;
-        public static final int note_count=0x7f050012;
-        public static final int note_liner=0x7f050018;
-        public static final int note_new=0x7f050016;
-        public static final int note_refresh=0x7f050017;
-        public static final int note_relat=0x7f050015;
-        public static final int note_time=0x7f05000f;
-        public static final int note_tv=0x7f050014;
-        public static final int noteimg1=0x7f050011;
-        public static final int noteimg2=0x7f050013;
-        public static final int noteitem=0x7f050010;
-        public static final int notelist_list=0x7f050019;
+        public static final int note_count=0x7f050011;
+        public static final int note_liner=0x7f050017;
+        public static final int note_new=0x7f050015;
+        public static final int note_refresh=0x7f050016;
+        public static final int note_relat=0x7f050014;
+        public static final int note_time=0x7f05000e;
+        public static final int note_tv=0x7f050013;
+        public static final int noteimg1=0x7f050010;
+        public static final int noteimg2=0x7f050012;
+        public static final int noteitem=0x7f05000f;
+        public static final int notelist_list=0x7f050018;
         public static final int out=0x7f050003;
         public static final int password=0x7f050001;
         public static final int username=0x7f050000;
@@ -87,6 +86,8 @@ public final class R {
         public static final int back=0x7f040002;
         public static final int hello=0x7f040000;
         public static final int node=0x7f040004;
+        public static final int part1=0x7f040005;
+        public static final int part2=0x7f040006;
         public static final int refresh=0x7f040003;
     }
 }

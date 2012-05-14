@@ -11,6 +11,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,11 +58,14 @@ public class NodeListActivity extends Activity {
 	private String Ftitle;
 	private int id;
 	private ProgressDialog mProgressDialog;
+	private Context mContext;
 
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.node_list);
+		MyApplication.getInstance().addActivity(this);
+		mContext = this;
 
 		id = getIntent().getIntExtra("ID", 0);
 		Log.d("ID_TAG", String.valueOf(id));
@@ -114,20 +119,25 @@ public class NodeListActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				if (id == -1) {
-					View relat1 = (View) view
-							.findViewById(R.id.nodelist_relat1);
-					View relat2 = (View) view
-							.findViewById(R.id.nodelist_relat2);
+					View relat1 = (View) view.findViewById(R.id.head_relat1);
+					View relat2 = (View) view.findViewById(R.id.head_relat2);
 
 					if (relat1.getVisibility() == View.INVISIBLE
 							|| relat2.getVisibility() == View.GONE) {
-						relat1.setVisibility(View.VISIBLE);
+						// relat1.setVisibility(View.VISIBLE);
 						relat2.setVisibility(View.VISIBLE);
 
-						TextView hContent = (TextView) relat2
+						FloatImageText hContent = new FloatImageText(mContext);
+
+						hContent = (FloatImageText) relat2
 								.findViewById(R.id.head_content);
 						hContent.setVisibility(View.VISIBLE);
 						hContent.setText(FContent);
+						// hContent.setText("电视里发生1了房间里是积分拉萨积分拉萨积分拉萨减肥啦空间  撒旦法发大水发撒旦法看完了鸡肉味容积率为热键礼物i经二路文件容量为积分拉萨解放路口上飞机撒离开房间爱水立方法拉圣诞节福禄寿");
+
+						Bitmap bm = BitmapFactory.decodeResource(
+								getResources(), R.drawable.ic_launcher);
+						hContent.setImageBitmap(bm, 0, 0);
 
 						Button b1 = (Button) relat1
 								.findViewById(R.id.nodelist_b1);
@@ -145,7 +155,7 @@ public class NodeListActivity extends Activity {
 						});
 
 					} else {
-						relat1.setVisibility(View.INVISIBLE);
+						// relat1.setVisibility(View.INVISIBLE);
 						relat2.setVisibility(View.GONE);
 					}
 				} else {
@@ -301,6 +311,13 @@ public class NodeListActivity extends Activity {
 		default:
 			return null;
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		Intent back = new Intent();
+		back.setClass(NodeListActivity.this, ShunoteActivity.class);
+		startActivity(back);
 	}
 
 }

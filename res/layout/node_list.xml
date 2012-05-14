@@ -53,7 +53,7 @@
             android:layout_height="fill_parent"
             android:cacheColorHint="#00000000"
             android:divider="@drawable/bg_all_repeat"
-            android:dividerHeight="9dp"
+            android:dividerHeight="11dp"
             android:listSelector="#00000000" >
         </com.shunote.ListViewDrag>
     </LinearLayout>

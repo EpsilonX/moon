@@ -15,8 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -68,6 +70,7 @@ public class ShunoteActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.note_list);
+		MyApplication.getInstance().addActivity(this);
 
 		// DisplayMetrics dm = getResources().getDisplayMetrics();
 		// int i = dm.densityDpi;
@@ -252,11 +255,11 @@ public class ShunoteActivity extends Activity {
 					int root = objects.getJSONObject(i).getInt("root");
 					String date = objects.getJSONObject(i).getString(
 							"createdate");
-					int nodenum =objects.getJSONObject(i).getInt("nodenum");
+					int nodenum = objects.getJSONObject(i).getInt("nodenum");
 					// Date d = new Date(date);
 					// DateFormat df=DateFormat.getDateInstance();
 					// Log.i("time", df.format(d) + "in" + name);
-					Note note = new Note(id, name, root, null, date,nodenum);
+					Note note = new Note(id, name, root, null, date, nodenum);
 					noteList.add(note);
 				}
 
@@ -324,6 +327,35 @@ public class ShunoteActivity extends Activity {
 		default:
 			return null;
 		}
+	}
+
+	/**
+	 * 重写Backt键方法，弹出对话框，确定是否要关闭程序
+	 */
+
+	@Override
+	public void onBackPressed() {
+		new AlertDialog.Builder(this).setTitle("温馨提示")
+				.setMessage("您是否要退出书'笔记？")
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stubgo
+
+						MyApplication.getInstance().exit();
+
+					}
+				})
+				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+
+					}
+				}).show();
+
 	}
 
 }

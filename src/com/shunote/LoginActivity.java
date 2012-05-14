@@ -24,88 +24,95 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 
-	String PREFS_NAME = ""; //SharedPrefences's PREF_NAME
+	String PREFS_NAME = ""; // SharedPrefences's PREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID,USERNAME,PWD; //SP_TAG
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD; // SP_TAG
 	Button button;
 	EditText username, pwd;
-	Boolean success=false;
-	
+	Boolean success = false;
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		MyApplication.getInstance().addActivity(this);
+
 		setContentView(R.layout.login);
 		button = (Button) findViewById(R.id.login);
 		username = (EditText) findViewById(R.id.username);
-		pwd =  (EditText) findViewById(R.id.password);
-		
+		pwd = (EditText) findViewById(R.id.password);
+
 		Configuration config = new Configuration(this);
 		PREFS_NAME = config.getValue("SPTAG");
 		sp = getSharedPreferences(PREFS_NAME, MODE_WORLD_READABLE);
-		
+
 		button.setOnClickListener(new View.OnClickListener() {
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public void onClick(View v) {			
-			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-			Editor spEditor = sp.edit();
-			spEditor.putString("USERNAME", username.getText().toString());
-			spEditor.putString("PWD", pwd.getText().toString());
-			spEditor.commit();
-			pairs.add(new BasicNameValuePair("j_username",
-					username.getText().toString()));
-			pairs.add(new BasicNameValuePair("j_password", pwd.getText().toString()));
-			LoginTask login = new LoginTask();
-			login.execute(pairs);	
-		}
-			
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onClick(View v) {
+				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+				Editor spEditor = sp.edit();
+				spEditor.putString("USERNAME", username.getText().toString());
+				spEditor.putString("PWD", pwd.getText().toString());
+				spEditor.commit();
+				pairs.add(new BasicNameValuePair("j_username", username
+						.getText().toString()));
+				pairs.add(new BasicNameValuePair("j_password", pwd.getText()
+						.toString()));
+				LoginTask login = new LoginTask();
+				login.execute(pairs);
+			}
+
 		});
-		
+
 	}
-	
+
 	/**
 	 * Login AsyncTask
+	 * 
 	 * @author Jeffrey
-	 *
+	 * 
 	 */
 	class LoginTask extends
 			android.os.AsyncTask<List<NameValuePair>, Integer, String> {
 
 		@Override
 		protected String doInBackground(List<NameValuePair>... params) {
-			
-			String result = "";		
-			
-			//acquire cookie from WebClient's login method
+
+			String result = "";
+
+			// acquire cookie from WebClient's login method
 			WebClient.getInstance().init(getApplicationContext());
-			
-			Log.d("Login",params[0].get(0).getValue());
-			CookieStore localCookieStore = WebClient.getInstance().Login(params[0]);
-			
-			//put cookie into sp
+
+			Log.d("Login", params[0].get(0).getValue());
+			CookieStore localCookieStore = WebClient.getInstance().Login(
+					params[0]);
+
+			// put cookie into sp
 			Editor spEditor = sp.edit();
 			List<Cookie> cookies = localCookieStore.getCookies();
 			for (Cookie c : cookies) {
 				spEditor.putString(c.getName(), c.getValue());
 			}
-			spEditor.commit();			
+			spEditor.commit();
 
 			USERID = sp.getString("userid", null);
 			JSESSIONID = sp.getString("JSESSIONID", null);
 			SESSIONID = sp.getString("sessionid", null);
 
-			result = USERID!=null?"Login Success:"+USERID:"Login Failed";
-			
-			if (USERID!=null) success=true;
+			result = USERID != null ? "Login Success:" + USERID
+					: "Login Failed";
+
+			if (USERID != null)
+				success = true;
 			return result;
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-			Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-			
-			if(success==true){
+			Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT)
+					.show();
+
+			if (success == true) {
 				Intent mIntent = new Intent();
 				mIntent.setClass(LoginActivity.this, ShunoteActivity.class);
 				startActivity(mIntent);
