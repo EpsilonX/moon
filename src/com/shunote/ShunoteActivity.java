@@ -25,6 +25,8 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -355,6 +357,44 @@ public class ShunoteActivity extends Activity {
 
 					}
 				}).show();
+
+	}
+
+	/**
+	 * 添加菜单按钮
+	 */
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		/* menu.add(组ID，项ID，显示顺序，显示标题) */
+		menu.add(0, 0, 0, "关于")
+				.setIcon(android.R.drawable.ic_menu_info_details);
+		menu.add(0, 1, 1, "设置").setIcon(android.R.drawable.ic_menu_manage);
+		menu.add(0, 2, 2, "退出").setIcon(
+				android.R.drawable.ic_menu_close_clear_cancel);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		int item_id = item.getItemId();
+		switch (item_id) {
+
+		case 0:
+
+			break;
+		case 1:
+
+			break;
+		case 2:
+
+			MyApplication.getInstance().exit();
+
+			break;
+		}
+
+		return true;
 
 	}
 
