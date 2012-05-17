@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:key="account" >
+        <Preference
+            android:key="account_change"
+            android:title="@string/account_change" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="刷新设置" >
+        <Preference
+            android:key="立即刷新"
+            android:title="立即刷新" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="自动刷新"
+            android:summary="进入Shunote后自动刷新"
+            android:title="自动刷新" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="图片接收" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="自动接收图片"
+            android:summary="GPRS,3G网络下自动接收并显示图片"
+            android:title="自动接收图片" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
