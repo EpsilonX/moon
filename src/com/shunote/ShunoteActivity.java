@@ -1,11 +1,10 @@
 package com.shunote;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
@@ -18,6 +17,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,9 +41,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.shunote.AppCache.Cache;
 import com.shunote.AppCache.Configuration;
+import com.shunote.AppCache.DBHelper;
 import com.shunote.Entity.Note;
+import com.shunote.Exception.CacheException;
 import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 
@@ -68,12 +72,20 @@ public class ShunoteActivity extends Activity {
 	MyAdapter myAdapter;
 	ProgressDialog mProgressDialog;
 	ImageButton note_new, note_refresh;
+	private Context mContext;
+	private Activity mA;
+	private Cache cache;
+
+	private boolean online = false;
+
+	private DBHelper dbHelper = null;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.note_list);
 		MyApplication.getInstance().addActivity(this);
-
+		mContext = this;
+		mA = this;
 		// DisplayMetrics dm = getResources().getDisplayMetrics();
 		// int i = dm.densityDpi;
 		// Log.d("TAG_DPI", String.valueOf(i));
@@ -82,6 +94,7 @@ public class ShunoteActivity extends Activity {
 		PREFS_NAME = config.getValue("SPTAG");
 		HOST = config.getValue("host");
 		sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		dbHelper = new DBHelper(this);
 
 		tv = (TextView) findViewById(R.id.out);
 		listview = (ListView) findViewById(R.id.notelist_list);
@@ -97,19 +110,19 @@ public class ShunoteActivity extends Activity {
 		JSESSIONID = sp.getString("JSESSIONID", null);
 		SESSIONID = sp.getString("sessionid", null);
 
-		// if user does not login, start LoginActivity
-		if (USERID == null) {
-			Intent mIntent = new Intent(this, LoginActivity.class);
-			startActivity(mIntent);
-			finish();
-		} else {
-			Log.v(TAG, "USERID=" + USERID);
-			Log.v(TAG, "JSESSIONID=" + JSESSIONID);
-			Log.v(TAG, "SESSIONID=" + SESSIONID);
+		online = WebClient.hasInternet(this);
 
-			GetDataTask getData = new GetDataTask();
-			String url = "/users/" + USERID + "/usernodes";
-			getData.execute(url);
+		offline_fetch();
+
+		// check network
+		if (online == false) {
+
+			Toast.makeText(this, "无法连接到网络，请检查网络配置", Toast.LENGTH_SHORT).show();
+
+		} else {
+
+			online_fetch();
+
 		}
 
 		// 设置动画效果
@@ -120,7 +133,7 @@ public class ShunoteActivity extends Activity {
 		set.addAnimation(animation);
 
 		// 画面转换位置移动动画效果
-		animation = new TranslateAnimation(-100, -50.0f,
+		animation = new TranslateAnimation(-100, -1.0f,
 				Animation.RELATIVE_TO_SELF, 0.0f, 50, -1.0f,
 				Animation.RELATIVE_TO_SELF, 0.0f);
 		animation.setDuration(200);
@@ -143,6 +156,9 @@ public class ShunoteActivity extends Activity {
 				node.putExtra("ID", note.getId());
 				node.setClass(ShunoteActivity.this, NodeListActivity.class);
 				startActivity(node);
+
+				overridePendingTransition(R.anim.right_in, R.anim.left_out);
+
 			}
 		});
 
@@ -159,15 +175,57 @@ public class ShunoteActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
-				noteList.clear();
+				// check network
+				online = WebClient.hasInternet(mA);
 
-				GetDataTask getData = new GetDataTask();
-				String url = "/users/" + USERID + "/usernodes";
-				getData.execute(url);
+				if (online == false) {
+
+					Toast.makeText(mContext, "无法连接到网络，请检查网络配置",
+							Toast.LENGTH_SHORT).show();
+
+				} else {
+
+					online_fetch();
+
+				}
 
 			}
 		});
 
+	}
+
+	public void offline_fetch() {
+
+		ArrayList<Note> list = dbHelper.getNoteList();
+
+		if (list.size() == 0) {
+			Toast.makeText(mContext, "没有数据，请先连接网络", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		for (Note n : list) {
+			noteList.add(n);
+		}
+
+		listview.setAdapter(myAdapter);
+	}
+
+	public void online_fetch() {
+		// if user does not login, start LoginActivity
+		if (USERID == null) {
+			Intent mIntent = new Intent(this, LoginActivity.class);
+			startActivity(mIntent);
+			finish();
+		} else {
+			Log.v(TAG, "USERID=" + USERID);
+			Log.v(TAG, "JSESSIONID=" + JSESSIONID);
+			Log.v(TAG, "SESSIONID=" + SESSIONID);
+
+			noteList.clear();
+
+			GetDataTask getData = new GetDataTask();
+			String url = "/users/" + USERID + "/usernodes";
+			getData.execute(url);
+		}
 	}
 
 	/**
@@ -252,17 +310,24 @@ public class ShunoteActivity extends Activity {
 
 				for (int i = 0; i < objects.length(); i++) {
 					int id = objects.getJSONObject(i).getInt("id");
-					String name = StringEscapeUtils.unescapeHtml(objects
-							.getJSONObject(i).getString("title"));
-					int root = objects.getJSONObject(i).getInt("root");
-					String date = objects.getJSONObject(i).getString(
-							"createdate");
-					int nodenum = objects.getJSONObject(i).getInt("nodenum");
-					// Date d = new Date(date);
-					// DateFormat df=DateFormat.getDateInstance();
-					// Log.i("time", df.format(d) + "in" + name);
-					Note note = new Note(id, name, root, null, date, nodenum);
-					noteList.add(note);
+					Note note;
+					try {
+						cache = Cache.getInstance();
+						cache.init(mContext);
+						note = cache.getNote(id);
+						Note dbNote = dbHelper.getNote(id);
+						if (dbNote == null) {
+							dbHelper.insertNote(note);
+						} else {
+							if (dbNote.equals(note) == false) {
+								dbHelper.updateNote(note);
+							}
+						}
+						noteList.add(note);
+					} catch (CacheException e) {
+						e.printStackTrace();
+					}
+
 				}
 
 			} catch (JSONException e) {
@@ -296,7 +361,7 @@ public class ShunoteActivity extends Activity {
 			String out = noteList.get(position).getName();
 			String date = noteList.get(position).getDate();
 			Date d = new Date(date);
-			DateFormat df = DateFormat.getDateInstance();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
 			int nodenum = noteList.get(position).getNodenum();
 			label.setText(out);
 			time.setText(df.format(d));
@@ -385,6 +450,10 @@ public class ShunoteActivity extends Activity {
 
 			break;
 		case 1:
+
+			Intent prefer = new Intent();
+			prefer.setClass(ShunoteActivity.this, PreferencesActivity.class);
+			startActivity(prefer);
 
 			break;
 		case 2:

@@ -60,6 +60,10 @@ public class LoginActivity extends Activity {
 						.toString()));
 				LoginTask login = new LoginTask();
 				login.execute(pairs);
+
+				button.setClickable(false);
+				Toast.makeText(LoginActivity.this, "正在登录，请稍等...",
+						Toast.LENGTH_SHORT).show();
 			}
 
 		});

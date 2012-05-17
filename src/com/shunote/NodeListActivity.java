@@ -33,10 +33,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shunote.AppCache.Cache;
+import com.shunote.AppCache.DBHelper;
 import com.shunote.Entity.Node;
 import com.shunote.Entity.Note;
 import com.shunote.Entity.Transform;
 import com.shunote.Exception.CacheException;
+import com.shunote.HTTP.WebClient;
 
 /**
  * @author silar
@@ -59,6 +61,8 @@ public class NodeListActivity extends Activity {
 	private int id;
 	private ProgressDialog mProgressDialog;
 	private Context mContext;
+	private Activity mA;
+	private DBHelper dbHelper;
 
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -66,6 +70,8 @@ public class NodeListActivity extends Activity {
 		setContentView(R.layout.node_list);
 		MyApplication.getInstance().addActivity(this);
 		mContext = this;
+		mA = this;
+		dbHelper = new DBHelper(mContext);
 
 		id = getIntent().getIntExtra("ID", 0);
 		Log.d("ID_TAG", String.valueOf(id));
@@ -175,6 +181,7 @@ public class NodeListActivity extends Activity {
 						next.setClass(NodeListActivity.this,
 								NodeNextActivity.class);
 						startActivity(next);
+
 					}
 
 				}
@@ -189,8 +196,9 @@ public class NodeListActivity extends Activity {
 
 				Intent back = new Intent();
 				back.setClass(NodeListActivity.this, ShunoteActivity.class);
+				back.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 				startActivity(back);
-
+				overridePendingTransition(R.anim.left_in, R.anim.right_out);
 			}
 		});
 
@@ -216,7 +224,11 @@ public class NodeListActivity extends Activity {
 		protected String doInBackground(Integer... params) {
 			Note note = null;
 			try {
-				note = cache.getNote(params[0]);
+				if (WebClient.hasInternet(mA) == false) {
+					note = dbHelper.getNote(params[0]);
+				} else {
+					note = cache.getNote(params[0]);
+				}
 			} catch (CacheException e) {
 				e.printStackTrace();
 			}
@@ -229,6 +241,11 @@ public class NodeListActivity extends Activity {
 		protected void onPostExecute(String result) {
 
 			dismissDialog(0);
+
+			if (result.equals("")) {
+				Toast.makeText(mContext, "没有数据", Toast.LENGTH_SHORT).show();
+				return;
+			}
 
 			JSONObject ojson = null;
 
@@ -247,13 +264,10 @@ public class NodeListActivity extends Activity {
 			FContent = root.getContent();
 			root.getSons();
 
-			Log.d("NodeList", Ftitle);
-
 			hTitle.setText(Ftitle);
 
 			for (Node n : root.getSons()) {
 				sons.add(n);
-				Log.d("NodeList.son", n.getTitle());
 
 			}
 			nodelist.setAdapter(nodeAdapter);
@@ -305,7 +319,7 @@ public class NodeListActivity extends Activity {
 			mProgressDialog.setIndeterminate(false);
 			mProgressDialog.setMax(500);
 			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			mProgressDialog.setCancelable(true);
+			mProgressDialog.setCancelable(false);
 			mProgressDialog.show();
 			return mProgressDialog;
 		default:
@@ -317,7 +331,11 @@ public class NodeListActivity extends Activity {
 	public void onBackPressed() {
 		Intent back = new Intent();
 		back.setClass(NodeListActivity.this, ShunoteActivity.class);
+		back.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(back);
+		// overridePendingTransition(android.R.anim.slide_in_left,
+		// android.R.anim.slide_out_right);
+		overridePendingTransition(R.anim.left_in, R.anim.right_out);
 	}
 
 }

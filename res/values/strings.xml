@@ -8,5 +8,6 @@
     <string name="node">子节点</string>
     <string name="part1">拖动存在bug，在getItemForPosition（）方法中，pos定义有错,滑动显示删除后，再次滑动删除按钮还存在（应该隐藏消失）</string>
     <string name="part2">父节点隐藏时，两个兄弟节点之间的拖动有时候不能相互交互,滑动item与点击item事件存在冲突bug</string>
+    <string name="account_change">切换帐号</string>
 
 </resources>

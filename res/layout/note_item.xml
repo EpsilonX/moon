@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="82dp"
     android:orientation="vertical"
     android:padding="5dp" >
 
-    <TextView
-        android:id="@+id/note_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2012/5/7"
-        android:textColor="#525252"
-        android:textSize="12sp" />
-
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" >
 
         <TextView
             android:id="@+id/noteitem"
@@ -27,16 +20,18 @@
             android:textSize="24sp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="3dp"
             android:src="@drawable/icon_arrow" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="2dp" >
+        android:padding="2dp" >
 
         <ImageView
             android:id="@+id/noteimg1"
@@ -54,15 +49,15 @@
             android:layout_toRightOf="@id/noteimg1"
             android:text="12"
             android:textColor="#525252"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
 
         <ImageView
             android:id="@+id/noteimg2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="8dp"
-            android:layout_toRightOf="@id/note_count"
+            android:layout_marginLeft="40dp"
+            android:layout_toRightOf="@id/noteimg1"
             android:src="@drawable/icon_book" />
 
         <TextView
@@ -70,7 +65,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#525252"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/note_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="2012/5/7"
+            android:textColor="#525252"
+            android:textSize="13sp" />
     </RelativeLayout>
 
 </LinearLayout>

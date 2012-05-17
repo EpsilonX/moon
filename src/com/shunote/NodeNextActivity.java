@@ -184,8 +184,8 @@ public class NodeNextActivity extends Activity {
 					next.setClass(NodeNextActivity.this, NodeNextActivity.class);
 
 				} else {
+					next.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 					next.setClass(NodeNextActivity.this, ShunoteActivity.class);
-
 				}
 				startActivity(next);
 			}
@@ -243,7 +243,7 @@ public class NodeNextActivity extends Activity {
 
 		} else {
 			back.setClass(NodeNextActivity.this, ShunoteActivity.class);
-
+			back.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		}
 		startActivity(back);
 
