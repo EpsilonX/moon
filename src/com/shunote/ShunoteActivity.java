@@ -62,7 +62,8 @@ public class ShunoteActivity extends Activity {
 
 	String PREFS_NAME = ""; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST,INIT; // SP's Tag
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST; // SP's Tag
+	Boolean INIT;
 	String TAG = "JEFFREY_TAG";
 
 	ArrayList<Note> noteList = new ArrayList<Note>();
@@ -109,18 +110,17 @@ public class ShunoteActivity extends Activity {
 		USERID = sp.getString("userid", null);
 		JSESSIONID = sp.getString("JSESSIONID", null);
 		SESSIONID = sp.getString("sessionid", null);
-		INIT = sp.getString("INIT", null);
+		INIT = sp.getBoolean("INIT", false);
 
 		online = WebClient.hasInternet(this);
 
 		// check network & check if inited
-		if (online == true&&INIT == null) {
+		if (online == true&&INIT == false) {
 			online_fetch();
 			//set init true
 			Editor spEditor = sp.edit();
-			spEditor.putString("INIT", "true");
-			spEditor.commit();
-			Toast.makeText(mContext, "数据初始化完毕", Toast.LENGTH_SHORT).show();
+			spEditor.putBoolean("INIT", true);
+			spEditor.commit();			
 		}
 		
 		//fetch data from cache

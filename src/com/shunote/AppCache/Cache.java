@@ -517,6 +517,7 @@ public class Cache{
 	public Boolean clear(){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		dbHelper.clear(db);
+		dbHelper.onCreate(db);
 		Editor spEditor = sp.edit();
 		spEditor.putString("userid", "-1");
 		spEditor.putBoolean("INIT", false);
