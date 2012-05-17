@@ -39,7 +39,11 @@ public class Transform {
 	 * @throws JSONException
 	 */
 	public Node json2Node(JSONObject json) throws JSONException{
-		Node root = new Node(json.getInt("node"),json.getString("title"),json.isNull("content")?null:json.getString("content"),null,null);
+		Image img = null;
+		if(json.isNull("picurl")==false){
+			img = new Image(json.getString("picurl"), null);
+		}
+		Node root = new Node(json.getInt("node"),json.getString("title"),json.isNull("content")?null:json.getString("content"),img,null);
 		Node father = root;
 		JSONArray sons = json.getJSONArray("sons");
 		Log.v("Jeffrey","root:"+root.getTitle());
@@ -58,8 +62,11 @@ public class Transform {
 			int id = sons.getJSONObject(i).getInt("node");
 			String title = sons.getJSONObject(i).getString("title");
 			String content = sons.getJSONObject(i).isNull("content")?null:sons.getJSONObject(i).getString("content");
-			//String img = sons.getJSONObject(i).getString("img");
-			Node son = new Node(id,title,content,null,father);
+			Image img = null;
+			if(sons.getJSONObject(i).isNull("picurl")==false){
+				img = new Image(sons.getJSONObject(i).getString("picurl"), null);
+			}
+			Node son = new Node(id,title,content,img,father);
 			father.addSons(son);
 			JSONArray newsons = sons.getJSONObject(i).getJSONArray("sons");
 			if(newsons.length()>0){
