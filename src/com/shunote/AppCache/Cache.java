@@ -1,5 +1,11 @@
 package com.shunote.AppCache;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +24,10 @@ import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 /**
@@ -457,6 +467,61 @@ public class Cache{
 			throw new CacheException("parse JSON failed!",e);
 		}
 		
+	}
+	
+	/**
+	 * get image
+	 * @param url picurl
+	 * @param option 0=get img from db; 1=get img from web
+	 * @return
+	 */
+	public Bitmap getImage(String url,int option){
+		Bitmap result = null;
+		if(option == 0){//get img from db
+			String img = dbHelper.getIMG(url);
+			if(img==null){
+				result = null;
+			}else{
+			   result = Transform.getInstance().String2Bmp(img);
+			}
+		}else if (option ==1){//get img from web
+			URL imageURL = null;
+			Bitmap bitmap = null;
+			try{
+				imageURL = new URL(url);
+			}catch(MalformedURLException e){
+				Log.e("url error", "url= " +url);
+			}
+			try{
+				HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
+				conn.setDoInput(true);
+				conn.connect();
+				InputStream is = conn.getInputStream();
+				BufferedInputStream bis = new BufferedInputStream(is);
+				bitmap = BitmapFactory.decodeStream(bis);
+				bis.close();
+				is.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+			result = bitmap;
+			dbHelper.insertIMG(url, Transform.getInstance().bmp2String(result));
+		}
+		return result;
+	}
+	
+	/**
+	 * clear all data
+	 * @return true/false	
+	 */
+	public Boolean clear(){
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		dbHelper.clear(db);
+		Editor spEditor = sp.edit();
+		spEditor.putString("userid", "-1");
+		spEditor.putBoolean("INIT", false);
+		spEditor.commit();
+		return true;
 	}
 	
 }

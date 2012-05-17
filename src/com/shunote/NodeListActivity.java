@@ -117,7 +117,7 @@ public class NodeListActivity extends Activity {
 		}
 
 		GetNoteTask task = new GetNoteTask();
-		task.execute(id);
+		task.execute(id,0);
 
 		nodelist.setOnItemClickListener(new OnItemClickListener() {
 
@@ -208,7 +208,7 @@ public class NodeListActivity extends Activity {
 			public void onClick(View v) {
 				sons.clear();
 				GetNoteTask task = new GetNoteTask();
-				task.execute(id);
+				task.execute(id,1);
 			}
 		});
 	}
@@ -224,9 +224,12 @@ public class NodeListActivity extends Activity {
 		protected String doInBackground(Integer... params) {
 			Note note = null;
 			try {
-				if (WebClient.hasInternet(mA) == false) {
+				if(WebClient.hasInternet(mA)==false&&params[1]==1){
+					Toast.makeText(mContext, "无法连接到网络，请检查网络配置", Toast.LENGTH_SHORT).show();
+				}else if(params[1]==0){
 					note = dbHelper.getNote(params[0]);
-				} else {
+					
+				}else{
 					note = cache.getNote(params[0]);
 				}
 			} catch (CacheException e) {

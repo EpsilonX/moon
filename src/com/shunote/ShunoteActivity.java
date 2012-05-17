@@ -62,7 +62,7 @@ public class ShunoteActivity extends Activity {
 
 	String PREFS_NAME = ""; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
-	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST; // SP's Tag
+	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST,INIT; // SP's Tag
 	String TAG = "JEFFREY_TAG";
 
 	ArrayList<Note> noteList = new ArrayList<Note>();
@@ -109,21 +109,22 @@ public class ShunoteActivity extends Activity {
 		USERID = sp.getString("userid", null);
 		JSESSIONID = sp.getString("JSESSIONID", null);
 		SESSIONID = sp.getString("sessionid", null);
+		INIT = sp.getString("INIT", null);
 
 		online = WebClient.hasInternet(this);
 
-		offline_fetch();
-
-		// check network
-		if (online == false) {
-
-			Toast.makeText(this, "无法连接到网络，请检查网络配置", Toast.LENGTH_SHORT).show();
-
-		} else {
-
+		// check network & check if inited
+		if (online == true&&INIT == null) {
 			online_fetch();
-
+			//set init true
+			Editor spEditor = sp.edit();
+			spEditor.putString("INIT", "true");
+			spEditor.commit();
+			Toast.makeText(mContext, "数据初始化完毕", Toast.LENGTH_SHORT).show();
 		}
+		
+		//fetch data from cache
+		offline_fetch();
 
 		// 设置动画效果
 		AnimationSet set = new AnimationSet(true);
@@ -211,7 +212,7 @@ public class ShunoteActivity extends Activity {
 
 	public void online_fetch() {
 		// if user does not login, start LoginActivity
-		if (USERID == null) {
+		if (USERID == null||USERID.equals("-1")) {
 			Intent mIntent = new Intent(this, LoginActivity.class);
 			startActivity(mIntent);
 			finish();
