@@ -24,6 +24,8 @@ import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -506,6 +508,20 @@ public class Cache{
 			dbHelper.insertIMG(url, Transform.getInstance().bmp2String(result));
 		}
 		return result;
+	}
+	
+	/**
+	 * clear all data
+	 * @return true/false	
+	 */
+	public Boolean clear(){
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		dbHelper.clear(db);
+		Editor spEditor = sp.edit();
+		spEditor.putString("userid", "-1");
+		spEditor.putBoolean("INIT", false);
+		spEditor.commit();
+		return true;
 	}
 	
 }

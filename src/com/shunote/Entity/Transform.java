@@ -85,7 +85,8 @@ public class Transform {
 		JSONObject result = new JSONObject();
 		result.put("node",root.getId());
 		result.put("title",root.getTitle());
-		result.put("content", root.getContent());		
+		result.put("content", root.getContent());	
+		result.put("picurl", root.getImg());
 		List<Node> sons = root.getSons();
 		JSONArray jsons = new JSONArray();
 		Transform.getInstance().nodeTraverse(sons, jsons);
@@ -107,6 +108,7 @@ public class Transform {
 			json.put("node",son.getId());
 			json.put("title",son.getTitle());
 			json.put("content", son.getContent());
+			json.put("picurl",son.getImg());
 			if(son.getSons()!=null){
 				JSONArray jsons = new JSONArray();
 				nodeTraverse(son.getSons(),jsons);
