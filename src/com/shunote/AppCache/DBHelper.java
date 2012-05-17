@@ -153,8 +153,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		String[] columns = {"data"};
 		String[] params = {url};
 		Cursor result = db.query("Image", columns, "url=?", params, null, null, null);
-		result.moveToFirst();
-		String data = result.getString(0);
+		String data = null;
+		if(result.moveToFirst()){
+		   data = result.getString(0);
+		}
 		result.close();
 		return data;
 	}
