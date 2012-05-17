@@ -63,7 +63,7 @@ public class ShunoteActivity extends Activity {
 	String PREFS_NAME = ""; // SharedPrefences'sPREF_NAME
 	SharedPreferences sp;
 	String USERID, JSESSIONID, SESSIONID, USERNAME, PWD, HOST; // SP's Tag
-	Boolean INIT;
+	boolean INIT;
 	String TAG = "JEFFREY_TAG";
 
 	ArrayList<Note> noteList = new ArrayList<Note>();
@@ -115,16 +115,19 @@ public class ShunoteActivity extends Activity {
 		online = WebClient.hasInternet(this);
 
 		// check network & check if inited
-		if (online == true&&INIT == false) {
+
+		if (online == true && INIT == false) {
 			online_fetch();
-			//set init true
-			Editor spEditor = sp.edit();
-			spEditor.putBoolean("INIT", true);
-			spEditor.commit();			
+			// set init true
+			if(noteList.size()>0){
+				Editor spEditor = sp.edit();
+				spEditor.putBoolean("INIT", true);
+				spEditor.commit();
+			}
+		}else{
+			// fetch data from cache
+			offline_fetch();
 		}
-		
-		//fetch data from cache
-		offline_fetch();
 
 		// 设置动画效果
 		AnimationSet set = new AnimationSet(true);
@@ -212,7 +215,7 @@ public class ShunoteActivity extends Activity {
 
 	public void online_fetch() {
 		// if user does not login, start LoginActivity
-		if (USERID == null||USERID.equals("-1")) {
+		if (USERID == null || USERID.equals("-1")) {
 			Intent mIntent = new Intent(this, LoginActivity.class);
 			startActivity(mIntent);
 			finish();

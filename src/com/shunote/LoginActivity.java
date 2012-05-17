@@ -42,7 +42,7 @@ public class LoginActivity extends Activity {
 
 		Configuration config = new Configuration(this);
 		PREFS_NAME = config.getValue("SPTAG");
-		sp = getSharedPreferences(PREFS_NAME, MODE_WORLD_READABLE);
+		sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
 		button.setOnClickListener(new View.OnClickListener() {
 
@@ -85,6 +85,7 @@ public class LoginActivity extends Activity {
 			String result = "";
 
 			// acquire cookie from WebClient's login method
+			WebClient.refresh();
 			WebClient.getInstance().init(getApplicationContext());
 
 			Log.d("Login", params[0].get(0).getValue());

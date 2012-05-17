@@ -76,13 +76,11 @@ public class Cache{
 	 * @throws CacheException 
 	 */
 	public void init(Context con) throws CacheException{
-		try{
-			if(this.dbHelper==null){
-				
+		try{				
 				Configuration config = new Configuration(con);
 				SPTAG = config.getValue("SPTAG");
 				HOST = config.getValue("host");
-				sp = con.getSharedPreferences(SPTAG,Context.MODE_WORLD_READABLE);
+				sp = con.getSharedPreferences(SPTAG,0);
 				
 				// fetch data from SP
 				USERID = sp.getString("userid", null);
@@ -98,7 +96,7 @@ public class Cache{
 				webClient = WebClient.getInstance();
 				
 				webClient.init(con);
-			}
+
 		}catch(NullPointerException e){
 			throw new CacheException("init failed!",e);			
 		}		
@@ -518,10 +516,12 @@ public class Cache{
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		dbHelper.clear(db);
 		dbHelper.onCreate(db);
+		db.close();
 		Editor spEditor = sp.edit();
-		spEditor.putString("userid", "-1");
-		spEditor.putBoolean("INIT", false);
+		spEditor.clear();
 		spEditor.commit();
+		Log.d("clear","clear success!");
+		
 		return true;
 	}
 	

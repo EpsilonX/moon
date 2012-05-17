@@ -55,7 +55,7 @@ public class WebClient {
 	private WebClient() {
 	};
 
-	/**
+	/** 
 	 * Singleton
 	 * 
 	 * @return instance
@@ -70,6 +70,14 @@ public class WebClient {
 			return instance;
 		}
 	}
+	
+	public static void refresh(){
+		if (instance !=null) {
+			instance = null;
+			instance = new WebClient();
+			instance.httpclient = new DefaultHttpClient();
+		}
+	}
 
 	public void init(Context con) {
 		Configuration config = new Configuration(con);
@@ -82,7 +90,6 @@ public class WebClient {
 		LOGIN_URL1 = host + "/zhishidian/user";
 		LOGIN_URL2 = host + "/j_security_check";
 		host = host + "/zhishidian";
-		Log.d(tag, "host=" + host);
 
 		httpclient.getParams().setParameter(
 				CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
@@ -101,24 +108,17 @@ public class WebClient {
 	public CookieStore Login(List<NameValuePair> pairs) {
 
 		CookieStore localCookieStore = new BasicCookieStore();
-
+		
 		try {
 
 			// /zhishidian/user/
 			Log.d(tag, pairs.get(0).getName() + ": " + pairs.get(0).getValue());
-			Log.d(tag, "Login url=" + LOGIN_URL1);
 			HttpGet httpGet = new HttpGet(LOGIN_URL1);
 			httpclient.execute(httpGet);
 			CookieStore cookieStore1 = httpclient.getCookieStore();
 
-			Log.d(tag, "cookie host="
-					+ cookieStore1.getCookies().get(0).getDomain());
-			Log.d(tag, "cookie hostports="
-					+ cookieStore1.getCookies().get(0).getPorts());
-
 			HttpContext context = new BasicHttpContext();
 
-			Log.d(tag, "Login url2 = " + LOGIN_URL2);
 			// session
 			HttpPost httpPost = new HttpPost(LOGIN_URL2);
 			httpPost.setEntity(new UrlEncodedFormEntity(pairs));
