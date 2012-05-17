@@ -210,7 +210,7 @@ public class ShunoteActivity extends Activity {
 
 	public void online_fetch() {
 		// if user does not login, start LoginActivity
-		if (USERID == null) {
+		if (USERID == null||USERID.equals("-1")) {
 			Intent mIntent = new Intent(this, LoginActivity.class);
 			startActivity(mIntent);
 			finish();
