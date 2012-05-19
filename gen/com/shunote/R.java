@@ -50,8 +50,9 @@ public final class R {
         public static final int item_bg_hover=0x7f02001c;
         public static final int item_bg_repeat=0x7f02001d;
         public static final int item_double_select=0x7f02001e;
-        public static final int item_single_select=0x7f02001f;
-        public static final int note_item_single=0x7f020020;
+        public static final int item_hr=0x7f02001f;
+        public static final int item_single_select=0x7f020020;
+        public static final int note_item_single=0x7f020021;
     }
     public static final class id {
         public static final int head_content=0x7f07000d;

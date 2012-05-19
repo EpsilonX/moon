@@ -81,8 +81,6 @@ public class PreferencesActivity extends PreferenceActivity {
 											public void onClick(
 													DialogInterface dialog,
 													int which) {
-												// TODO Auto-generated method
-												// stub
 
 											}
 										}).show();
