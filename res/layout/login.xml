@@ -1,32 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_all_repeat"
+    android:orientation="vertical"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp" >
 
     <EditText
         android:id="@+id/username"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/input_username"
+        android:hint="请输入帐号"
         android:inputType="textEmailAddress"
-        android:text="agle_91@sina.cn" >
-
-        <requestFocus>
-        </requestFocus>
+        android:lines="1"
+        android:paddingLeft="65sp"
+        android:saveEnabled="true"
+        android:textSize="20sp" >
     </EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/username"
+        android:layout_alignLeft="@+id/username"
+        android:layout_alignTop="@+id/username"
+        android:layout_marginRight="15.0sp"
+        android:gravity="center_vertical"
+        android:paddingLeft="7.0sp"
+        android:text="帐 号:"
+        android:textColor="#ff3f3f3f"
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/username"
+        android:background="@drawable/input_password"
+        android:hint="请输入密码"
         android:inputType="textPassword"
-        android:text="wu5yu1bing81013" >
+        android:lines="1"
+        android:paddingLeft="65sp"
+        android:textSize="20sp" >
     </EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/password"
+        android:layout_alignLeft="@+id/password"
+        android:layout_alignTop="@+id/password"
+        android:layout_marginRight="15.0sp"
+        android:gravity="center_vertical"
+        android:paddingLeft="7.0sp"
+        android:text="密 码:"
+        android:textColor="#ff3f3f3f"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="登录" />
+        android:layout_below="@id/password"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/button_login_select"
+        android:clickable="false" />
 
-</LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/username"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:src="@drawable/login_logo" />
+
+</RelativeLayout>

@@ -11,9 +11,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,11 +59,13 @@ public class NodeListActivity extends Activity {
 	private TextView hTitle;
 	private String FContent;
 	private String Ftitle;
+	
 	private int id;
 	private ProgressDialog mProgressDialog;
 	private Context mContext;
 	private Activity mA;
 	private DBHelper dbHelper;
+	private FloatImageText hContent;
 
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -76,6 +79,7 @@ public class NodeListActivity extends Activity {
 		id = getIntent().getIntExtra("ID", 0);
 		Log.d("ID_TAG", String.valueOf(id));
 
+		
 		node_back = (Button) findViewById(R.id.node_back);
 		node_refresh = (ImageButton) findViewById(R.id.node_refresh);
 		nodelist = (ListViewDrag) findViewById(R.id.nodelist);
@@ -117,7 +121,7 @@ public class NodeListActivity extends Activity {
 		}
 
 		GetNoteTask task = new GetNoteTask();
-		task.execute(id,0);
+		task.execute(id, 0);
 
 		nodelist.setOnItemClickListener(new OnItemClickListener() {
 
@@ -133,17 +137,18 @@ public class NodeListActivity extends Activity {
 						// relat1.setVisibility(View.VISIBLE);
 						relat2.setVisibility(View.VISIBLE);
 
-						FloatImageText hContent = new FloatImageText(mContext);
+						hContent = new FloatImageText(mContext);
 
 						hContent = (FloatImageText) relat2
 								.findViewById(R.id.head_content);
 						hContent.setVisibility(View.VISIBLE);
 						hContent.setText(FContent);
-						// hContent.setText("电视里发生1了房间里是积分拉萨积分拉萨积分拉萨减肥啦空间  撒旦法发大水发撒旦法看完了鸡肉味容积率为热键礼物i经二路文件容量为积分拉萨解放路口上飞机撒离开房间爱水立方法拉圣诞节福禄寿");
 
-						Bitmap bm = BitmapFactory.decodeResource(
-								getResources(), R.drawable.ic_launcher);
-						hContent.setImageBitmap(bm, 0, 0);
+						
+
+						// Bitmap bm = BitmapFactory.decodeResource(
+						// getResources(), R.drawable.ic_launcher);
+						// hContent.setImageBitmap(bm, 0, 0);
 
 						Button b1 = (Button) relat1
 								.findViewById(R.id.nodelist_b1);
@@ -208,7 +213,7 @@ public class NodeListActivity extends Activity {
 			public void onClick(View v) {
 				sons.clear();
 				GetNoteTask task = new GetNoteTask();
-				task.execute(id,1);
+				task.execute(id, 1);
 			}
 		});
 	}
@@ -224,12 +229,13 @@ public class NodeListActivity extends Activity {
 		protected String doInBackground(Integer... params) {
 			Note note = null;
 			try {
-				if(WebClient.hasInternet(mA)==false&&params[1]==1){
-					Toast.makeText(mContext, "无法连接到网络，请检查网络配置", Toast.LENGTH_SHORT).show();
-				}else if(params[1]==0){
+				if (WebClient.hasInternet(mA) == false && params[1] == 1) {
+					Toast.makeText(mContext, "无法连接到网络，请检查网络配置",
+							Toast.LENGTH_SHORT).show();
+				} else if (params[1] == 0) {
 					note = dbHelper.getNote(params[0]);
-					
-				}else{
+
+				} else {
 					note = cache.getNote(params[0]);
 				}
 			} catch (CacheException e) {
@@ -265,6 +271,7 @@ public class NodeListActivity extends Activity {
 			// root.getId();
 			Ftitle = root.getTitle();
 			FContent = root.getContent();
+			
 			root.getSons();
 
 			hTitle.setText(Ftitle);
@@ -336,9 +343,9 @@ public class NodeListActivity extends Activity {
 		back.setClass(NodeListActivity.this, ShunoteActivity.class);
 		back.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(back);
-		// overridePendingTransition(android.R.anim.slide_in_left,
-		// android.R.anim.slide_out_right);
+
 		overridePendingTransition(R.anim.left_in, R.anim.right_out);
 	}
 
+	
 }

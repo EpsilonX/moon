@@ -1,5 +1,7 @@
 package com.shunote.Entity;
 
+import java.io.Serializable;
+
 import android.graphics.Bitmap;
 
 /**
@@ -7,8 +9,9 @@ import android.graphics.Bitmap;
  * @author Jeffrey
  *
  */
-public class Image {
-	
+public class Image implements Serializable{
+
+	private static final long serialVersionUID = 8200631347551751593L;
 	private String url;
 	private String data;
 	private Bitmap bmp;

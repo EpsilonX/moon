@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,6 +77,7 @@ public class ShunoteActivity extends Activity {
 	private Context mContext;
 	private Activity mA;
 	private Cache cache;
+	private boolean refresh_auto;
 
 	private boolean online = false;
 
@@ -114,17 +116,25 @@ public class ShunoteActivity extends Activity {
 
 		online = WebClient.hasInternet(this);
 
-		// check network & check if inited
+		// 获取是否接收图片的权限
+		SharedPreferences shp = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		refresh_auto = shp.getBoolean("refresh_auto", true);
 
-		if (online == true && INIT == false) {
-			online_fetch();
-			// set init true
-			if(noteList.size()>0){
-				Editor spEditor = sp.edit();
-				spEditor.putBoolean("INIT", true);
-				spEditor.commit();
-			}
-		}else{
+		// if user does not login, start LoginActivity
+		if (USERID == null || USERID.equals("-1")) {
+			Intent mIntent = new Intent(this, LoginActivity.class);
+			startActivity(mIntent);
+			finish();
+		} else if (online == true && INIT == false) {
+			// check network & check if inited
+			online_fetch(0);
+
+		} else if (online == true && refresh_auto == true) {
+			// auto fetch data from server
+			online_fetch(1);
+
+		} else {
 			// fetch data from cache
 			offline_fetch();
 		}
@@ -189,7 +199,7 @@ public class ShunoteActivity extends Activity {
 
 				} else {
 
-					online_fetch();
+					online_fetch(1);
 
 				}
 
@@ -203,7 +213,8 @@ public class ShunoteActivity extends Activity {
 		ArrayList<Note> list = dbHelper.getNoteList();
 
 		if (list.size() == 0) {
-			Toast.makeText(mContext, "没有数据，请先连接网络", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext, "网络链接错误，请先连接网络", Toast.LENGTH_SHORT)
+					.show();
 			return;
 		}
 		for (Note n : list) {
@@ -213,16 +224,26 @@ public class ShunoteActivity extends Activity {
 		listview.setAdapter(myAdapter);
 	}
 
-	public void online_fetch() {
-		// if user does not login, start LoginActivity
-		if (USERID == null || USERID.equals("-1")) {
-			Intent mIntent = new Intent(this, LoginActivity.class);
-			startActivity(mIntent);
-			finish();
-		} else {
-			Log.v(TAG, "USERID=" + USERID);
-			Log.v(TAG, "JSESSIONID=" + JSESSIONID);
-			Log.v(TAG, "SESSIONID=" + SESSIONID);
+	public void online_fetch(int option) {
+		if (option == 0) {
+			// if user does not login, start LoginActivity
+			if (USERID == null || USERID.equals("-1")) {
+				Intent mIntent = new Intent(this, LoginActivity.class);
+				startActivity(mIntent);
+				finish();
+			} else {
+
+				Editor spEditor = sp.edit();
+				spEditor.putBoolean("INIT", true);
+				spEditor.commit();
+
+				noteList.clear();
+
+				GetDataTask getData = new GetDataTask();
+				String url = "/users/" + USERID + "/usernodes";
+				getData.execute(url);
+			}
+		} else if (option == 1) {
 
 			noteList.clear();
 
@@ -262,13 +283,10 @@ public class ShunoteActivity extends Activity {
 					myc.getCookieStore());
 
 			publishProgress(100);
-			Log.i("ShunoteActivity.GetDataTask", "result:" + result);
 
 			// wrong result, login again
 			if (!result.startsWith("{")) {
 
-				Log.i("ShunoteActivity.GetDataTask",
-						"get data failed,login again!");
 				USERNAME = sp.getString("USERNAME", "");
 				PWD = sp.getString("PWD", "");
 
@@ -451,6 +469,8 @@ public class ShunoteActivity extends Activity {
 		switch (item_id) {
 
 		case 0:
+			// 关于Shunote
+			dialog();
 
 			break;
 		case 1:
@@ -471,4 +491,26 @@ public class ShunoteActivity extends Activity {
 
 	}
 
+	// 定义对话框
+	protected void dialog() {
+
+		LayoutInflater inflater = LayoutInflater.from(this);
+		View layout = inflater.inflate(R.layout.about,
+				(ViewGroup) findViewById(R.id.av));
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setView(layout);
+		AlertDialog alertDialog = builder.create();
+		alertDialog.setButton("确定", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+
+				dialog.dismiss();
+
+			}
+		});
+		alertDialog.show();
+	}
 }

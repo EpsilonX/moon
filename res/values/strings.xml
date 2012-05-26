@@ -9,5 +9,14 @@
     <string name="part1">拖动存在bug，在getItemForPosition（）方法中，pos定义有错,滑动显示删除后，再次滑动删除按钮还存在（应该隐藏消失）</string>
     <string name="part2">父节点隐藏时，两个兄弟节点之间的拖动有时候不能相互交互,滑动item与点击item事件存在冲突bug</string>
     <string name="account_change">切换帐号</string>
+    <string name="refresh_title">刷新设置</string>
+    <string name="refresh_now">立即刷新</string>
+    <string name="refresh_auto">自动刷新</string>
+    <string name="refresh_sum">进入Shunote后自动刷新</string>
+    <string name="refresh_wifi">仅在wifi下刷新数据</string>
+    <string name="image_title">图片接收</string>
+    <string name="image_auto">自动接收图片</string>
+    <string name="image_sum">GPRS,3G网络下自动接收并显示图片</string>
+    <string name="about2">copyright@2012玩客实验室</string>
 
 </resources>

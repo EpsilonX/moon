@@ -6,9 +6,11 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 import com.shunote.AppCache.Cache;
 import com.shunote.Entity.Node;
 import com.shunote.Exception.CacheException;
+import com.shunote.HTTP.WebClient;
 
 public class NodeNextActivity extends Activity {
 
@@ -40,6 +43,10 @@ public class NodeNextActivity extends Activity {
 	private ImageButton node_refresh;
 	private Node node;
 	private String FContent;
+	private String Fimg;
+	private boolean image_get;
+	private boolean online;
+	private FloatImageText hContent;
 
 	private List<Node> sons = new ArrayList<Node>();
 
@@ -50,7 +57,16 @@ public class NodeNextActivity extends Activity {
 
 		node = (Node) getIntent().getSerializableExtra("node");
 
-		Log.d("NodeNext", node.getTitle());
+		if (node.getImg() != null) {
+			Fimg = node.getImg().getUrl();
+		} else {
+			Fimg = null;
+		}
+
+		// 获取是否接收图片的权限
+		SharedPreferences shp = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		image_get = shp.getBoolean("image_auto", false);
 
 		node_back = (Button) findViewById(R.id.node_back);
 		node_refresh = (ImageButton) findViewById(R.id.node_refresh);
@@ -118,14 +134,20 @@ public class NodeNextActivity extends Activity {
 						// relat1.setVisibility(View.VISIBLE);
 						relat2.setVisibility(View.VISIBLE);
 
-						FloatImageText hContent = (FloatImageText) relat2
+						hContent = (FloatImageText) relat2
 								.findViewById(R.id.head_content);
 						hContent.setVisibility(View.VISIBLE);
 						hContent.setText(FContent);
 
-						Bitmap bm = BitmapFactory.decodeResource(
-								getResources(), R.drawable.ic_launcher);
-						hContent.setImageBitmap(bm, 0, 0);
+						if (image_get == true && Fimg != null) {
+							Log.d("NodeNext", "create pic");
+							GetImageTask git = new GetImageTask();
+							git.execute(Fimg);
+						}
+
+						// Bitmap bm = BitmapFactory.decodeResource(
+						// getResources(), R.drawable.ic_launcher);
+						// hContent.setImageBitmap(bm, 0, 0);
 
 						Button b1 = (Button) relat1
 								.findViewById(R.id.nodelist_b1);
@@ -248,4 +270,35 @@ public class NodeNextActivity extends Activity {
 		startActivity(back);
 
 	}
+
+	class GetImageTask extends android.os.AsyncTask<String, Integer, Bitmap> {
+
+		@Override
+		protected Bitmap doInBackground(String... params) {
+
+			Bitmap result = null;
+			// check network
+			online = WebClient.hasInternet(NodeNextActivity.this);
+			if (online == false) {
+				result = Cache.getInstance().getImage(params[0], 0);
+			} else {
+				result = Cache.getInstance().getImage(params[0], 1);
+			}
+
+			Log.d("NodeNext", result.toString());
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			if (result != null) {
+				// show image
+
+				hContent.setImageBitmap(result, 0, 0);
+
+			}
+		}
+
+	}
+
 }
