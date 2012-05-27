@@ -11,10 +11,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +56,7 @@ public class NodeListActivity extends Activity {
 	private TextView hTitle;
 	private String FContent;
 	private String Ftitle;
-	
+
 	private int id;
 	private ProgressDialog mProgressDialog;
 	private Context mContext;
@@ -79,14 +76,14 @@ public class NodeListActivity extends Activity {
 		id = getIntent().getIntExtra("ID", 0);
 		Log.d("ID_TAG", String.valueOf(id));
 
-		
 		node_back = (Button) findViewById(R.id.node_back);
 		node_refresh = (ImageButton) findViewById(R.id.node_refresh);
 		nodelist = (ListViewDrag) findViewById(R.id.nodelist);
 
-		View head = LayoutInflater.from(this).inflate(R.layout.nodehead, null);
+		View head = LayoutInflater.from(this).inflate(R.layout.node_list_head,
+				null);
 
-		hTitle = (TextView) head.findViewById(R.id.head_title);
+		hTitle = (TextView) head.findViewById(R.id.node_list_head_title);
 
 		nodelist.addHeaderView(head, null, true);
 
@@ -128,49 +125,7 @@ public class NodeListActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if (id == -1) {
-					View relat1 = (View) view.findViewById(R.id.head_relat1);
-					View relat2 = (View) view.findViewById(R.id.head_relat2);
-
-					if (relat1.getVisibility() == View.INVISIBLE
-							|| relat2.getVisibility() == View.GONE) {
-						// relat1.setVisibility(View.VISIBLE);
-						relat2.setVisibility(View.VISIBLE);
-
-						hContent = new FloatImageText(mContext);
-
-						hContent = (FloatImageText) relat2
-								.findViewById(R.id.head_content);
-						hContent.setVisibility(View.VISIBLE);
-						hContent.setText(FContent);
-
-						
-
-						// Bitmap bm = BitmapFactory.decodeResource(
-						// getResources(), R.drawable.ic_launcher);
-						// hContent.setImageBitmap(bm, 0, 0);
-
-						Button b1 = (Button) relat1
-								.findViewById(R.id.nodelist_b1);
-						b1.setVisibility(View.VISIBLE);
-
-						b1.setOnClickListener(new View.OnClickListener() {
-
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-
-								Toast.makeText(NodeListActivity.this, "测试",
-										Toast.LENGTH_SHORT).show();
-							}
-						});
-
-					} else {
-						// relat1.setVisibility(View.INVISIBLE);
-						relat2.setVisibility(View.GONE);
-					}
-				} else {
-
+				if (id != -1) {
 					Node nextNode = (Node) parent.getAdapter()
 							.getItem(position);
 					if (nextNode == null) {
@@ -271,7 +226,7 @@ public class NodeListActivity extends Activity {
 			// root.getId();
 			Ftitle = root.getTitle();
 			FContent = root.getContent();
-			
+
 			root.getSons();
 
 			hTitle.setText(Ftitle);
@@ -347,5 +302,4 @@ public class NodeListActivity extends Activity {
 		overridePendingTransition(R.anim.left_in, R.anim.right_out);
 	}
 
-	
 }

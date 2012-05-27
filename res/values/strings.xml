@@ -18,5 +18,6 @@
     <string name="image_auto">自动接收图片</string>
     <string name="image_sum">GPRS,3G网络下自动接收并显示图片</string>
     <string name="about2">copyright@2012玩客实验室</string>
+    <string name="help">设置与帮助</string>
 
 </resources>

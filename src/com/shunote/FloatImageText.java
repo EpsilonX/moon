@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Paint.FontMetrics;
@@ -50,7 +49,7 @@ public class FloatImageText extends View {
 		mTextLines = new ArrayList<TextLine>();
 
 		mPaint.setTextSize(30);
-		mPaint.setColor(Color.RED);
+		mPaint.setColor(R.color.gray_white);
 
 	}
 

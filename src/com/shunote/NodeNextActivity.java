@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -26,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +66,7 @@ public class NodeNextActivity extends Activity {
 		// 获取是否接收图片的权限
 		SharedPreferences shp = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		image_get = shp.getBoolean("image_auto", false);
+		image_get = shp.getBoolean("image_auto", true);
 
 		node_back = (Button) findViewById(R.id.node_back);
 		node_refresh = (ImageButton) findViewById(R.id.node_refresh);
@@ -128,46 +128,52 @@ public class NodeNextActivity extends Activity {
 				if (id == -1) {
 					View relat1 = (View) view.findViewById(R.id.head_relat1);
 					View relat2 = (View) view.findViewById(R.id.head_relat2);
+					ImageView img = (ImageView) view
+							.findViewById(R.id.node_img);
 
-					if (relat1.getVisibility() == View.INVISIBLE
-							|| relat2.getVisibility() == View.GONE) {
-						// relat1.setVisibility(View.VISIBLE);
-						relat2.setVisibility(View.VISIBLE);
+					if (node.getFather() != null) {
+						if (relat1.getVisibility() == View.INVISIBLE
+								|| relat2.getVisibility() == View.GONE) {
+							// relat1.setVisibility(View.VISIBLE);
+							relat2.setVisibility(View.VISIBLE);
+							img.setVisibility(View.VISIBLE);
 
-						hContent = (FloatImageText) relat2
-								.findViewById(R.id.head_content);
-						hContent.setVisibility(View.VISIBLE);
-						hContent.setText(FContent);
+							hContent = (FloatImageText) relat2
+									.findViewById(R.id.head_content);
+							hContent.setVisibility(View.VISIBLE);
+							hContent.setText(FContent);
 
-						if (image_get == true && Fimg != null) {
-							Log.d("NodeNext", "create pic");
-							GetImageTask git = new GetImageTask();
-							git.execute(Fimg);
-						}
+							Log.d("NodeNext", "image_get=" + image_get);
+							Log.d("NodeNext", "Fimg=" + Fimg);
 
-						// Bitmap bm = BitmapFactory.decodeResource(
-						// getResources(), R.drawable.ic_launcher);
-						// hContent.setImageBitmap(bm, 0, 0);
-
-						Button b1 = (Button) relat1
-								.findViewById(R.id.nodelist_b1);
-						b1.setVisibility(View.VISIBLE);
-
-						b1.setOnClickListener(new View.OnClickListener() {
-
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-
-								Toast.makeText(NodeNextActivity.this, "测试",
-										Toast.LENGTH_SHORT).show();
+							if (image_get == true && Fimg != null) {
+								Log.d("NodeNext", "create pic");
+								GetImageTask git = new GetImageTask();
+								git.execute(Fimg);
 							}
-						});
 
-					} else {
-						// relat1.setVisibility(View.INVISIBLE);
-						relat2.setVisibility(View.GONE);
+							Button b1 = (Button) relat1
+									.findViewById(R.id.nodelist_b1);
+							b1.setVisibility(View.VISIBLE);
+
+							b1.setOnClickListener(new View.OnClickListener() {
+
+								@Override
+								public void onClick(View v) {
+									// TODO Auto-generated method stub
+
+									Toast.makeText(NodeNextActivity.this, "测试",
+											Toast.LENGTH_SHORT).show();
+								}
+							});
+
+						} else {
+							// relat1.setVisibility(View.INVISIBLE);
+							relat2.setVisibility(View.GONE);
+							img.setVisibility(View.GONE);
+						}
 					}
+
 				} else {
 
 					Node nextNode = (Node) parent.getAdapter()
@@ -279,10 +285,16 @@ public class NodeNextActivity extends Activity {
 			Bitmap result = null;
 			// check network
 			online = WebClient.hasInternet(NodeNextActivity.this);
+			cache = Cache.getInstance();
+			try {
+				cache.init(getApplicationContext());
+			} catch (CacheException e) {
+				e.printStackTrace();
+			}
 			if (online == false) {
-				result = Cache.getInstance().getImage(params[0], 0);
+				result = cache.getImage(params[0], 0);
 			} else {
-				result = Cache.getInstance().getImage(params[0], 1);
+				result = cache.getImage(params[0], 1);
 			}
 
 			Log.d("NodeNext", result.toString());
@@ -293,6 +305,24 @@ public class NodeNextActivity extends Activity {
 		protected void onPostExecute(Bitmap result) {
 			if (result != null) {
 				// show image
+
+				// int width = result.getWidth();
+				// int height = result.getHeight();
+				//
+				// int newWidth = 160;
+				// int newHeight = 120;
+				//
+				// // 计算缩放比例
+				// float scaleWidth = ((float) newWidth) / width;
+				// float scaleHeight = ((float) newHeight) / height;
+				//
+				// // 取得想要缩放的matrix参数
+				// Matrix matrix = new Matrix();
+				// matrix.postScale(scaleWidth, scaleHeight);
+				//
+				// // 得到新的bitmap
+				// Bitmap bit = Bitmap.createBitmap(result, 0, 0, width, height,
+				// matrix, true);
 
 				hContent.setImageBitmap(result, 0, 0);
 

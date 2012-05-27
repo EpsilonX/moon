@@ -34,7 +34,7 @@ import com.shunote.Exception.CacheException;
 import com.shunote.HTTP.MyCookieStore;
 import com.shunote.HTTP.WebClient;
 
-public class PreferencesActivity extends PreferenceActivity implements
+public class MyPreferencesActivity extends PreferenceActivity implements
 		Preference.OnPreferenceClickListener,
 		Preference.OnPreferenceChangeListener {
 
@@ -107,7 +107,7 @@ public class PreferencesActivity extends PreferenceActivity implements
 
 		if (preference.equals(account_change)) {
 
-			new AlertDialog.Builder(PreferencesActivity.this)
+			new AlertDialog.Builder(MyPreferencesActivity.this)
 					.setMessage("您确认注销改帐号?")
 					.setPositiveButton("确定",
 							new DialogInterface.OnClickListener() {
@@ -127,7 +127,7 @@ public class PreferencesActivity extends PreferenceActivity implements
 									}
 
 									Intent login = new Intent();
-									login.setClass(PreferencesActivity.this,
+									login.setClass(MyPreferencesActivity.this,
 											LoginActivity.class);
 									startActivity(login);
 									finish();
@@ -148,11 +148,11 @@ public class PreferencesActivity extends PreferenceActivity implements
 		if (preference.equals(refresh_now)) {
 
 			// check network
-			online = WebClient.hasInternet(PreferencesActivity.this);
+			online = WebClient.hasInternet(MyPreferencesActivity.this);
 
 			if (online == false) {
 
-				Toast.makeText(PreferencesActivity.this, "无法连接到网络，请检查网络配置",
+				Toast.makeText(MyPreferencesActivity.this, "无法连接到网络，请检查网络配置",
 						Toast.LENGTH_SHORT).show();
 
 			} else {
@@ -250,7 +250,7 @@ public class PreferencesActivity extends PreferenceActivity implements
 					Note note;
 					try {
 						cache = Cache.getInstance();
-						cache.init(PreferencesActivity.this);
+						cache.init(MyPreferencesActivity.this);
 						note = cache.getNote(id);
 						Note dbNote = dbHelper.getNote(id);
 						if (dbNote == null) {
@@ -264,7 +264,7 @@ public class PreferencesActivity extends PreferenceActivity implements
 						e.printStackTrace();
 					}
 
-					Toast.makeText(PreferencesActivity.this, "数据更新完毕",
+					Toast.makeText(MyPreferencesActivity.this, "数据更新完毕",
 							Toast.LENGTH_SHORT).show();
 				}
 

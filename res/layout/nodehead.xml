@@ -13,13 +13,23 @@
         android:gravity="center"
         android:text="Father Title"
         android:textColor="#888888"
-        android:textSize="20sp" />
+        android:textSize="25sp" />
+
+    <ImageView
+        android:id="@+id/node_img"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/head_title"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/item_hr"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/head_relat1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/head_title"
+        android:layout_below="@id/node_img"
         android:layout_marginLeft="9dp"
         android:layout_marginRight="9dp"
         android:descendantFocusability="blocksDescendants"
@@ -79,5 +89,11 @@
             android:layout_margin="5dp" >
         </com.shunote.FloatImageText>
     </RelativeLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/item_hr" />
 
 </RelativeLayout>

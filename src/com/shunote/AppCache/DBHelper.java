@@ -156,6 +156,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String data = null;
 		if(result.moveToFirst()){
 		   data = result.getString(0);
+		   Log.d(tag,"get IMG");
 		}
 		result.close();
 		return data;

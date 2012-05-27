@@ -476,7 +476,7 @@ public class ShunoteActivity extends Activity {
 		case 1:
 
 			Intent prefer = new Intent();
-			prefer.setClass(ShunoteActivity.this, PreferencesActivity.class);
+			prefer.setClass(ShunoteActivity.this, MyPreferencesActivity.class);
 			startActivity(prefer);
 
 			break;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="50dp"
     android:orientation="vertical"
     android:paddingLeft="18dp"
     android:paddingRight="18dp" >
@@ -12,9 +12,13 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/bg_childnode_select"
+        android:ellipsize="end"
         android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:singleLine="true"
         android:text="@string/node"
         android:textColor="#888888"
-        android:textSize="25sp" />
+        android:textSize="22sp" />
 
 </RelativeLayout>
